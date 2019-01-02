@@ -24,6 +24,9 @@ import { locationsFetchData, listingsFetchData, brandsFetchData, ebayMarketplace
 
 //const store = configureStore();
 
+//const urlbase = 'http://192.168.1.11:8083';
+const urlbase = 'http://10.0.0.216:8083';
+
 class App extends React.PureComponent {
 
   state = {
@@ -31,10 +34,10 @@ class App extends React.PureComponent {
   }
 
   componentDidMount(){
-    this.props.fetchLocations('http://192.168.1.11:8083/getlocations');
-    this.props.fetchBrands('http://192.168.1.11:8083/getbrands');
-    this.props.fetchEbayMarketplaces('http://192.168.1.11:8083/getebaymarketplaces');
-    this.props.fetchListings('http://192.168.1.11:8083/getlistings', this.props.clickedColumn, this.props.direction === 'ascending' ? 'asc' : 'desc' );
+    this.props.fetchLocations(urlbase+'/getlocations');
+    this.props.fetchBrands(urlbase+'/getbrands');
+    this.props.fetchEbayMarketplaces(urlbase+'/getebaymarketplaces');
+    this.props.fetchListings(urlbase+'/getlistings', this.props.clickedColumn, this.props.direction === 'ascending' ? 'asc' : 'desc' );
     
     setInterval(this.loadInformationFromServer, 30000);
   }
@@ -49,11 +52,11 @@ class App extends React.PureComponent {
     //const state = store.getState();
   
     //window.client.getListingsFromDB(store, state.globalDirection, state.globalColumn);
-    this.props.fetchLocations('http://192.168.1.11:8083/getlocations');
-    this.props.fetchBrands('http://192.168.1.11:8083/getbrands');
-    this.props.fetchEbayMarketplaces('http://192.168.1.11:8083/getebaymarketplaces');
-    this.props.fetchListings('http://192.168.1.11:8083/getlistings', this.props.clickedColumn, this.props.direction === 'ascending' ? 'asc' : 'desc' );
-  }
+    this.props.fetchLocations(urlbase+'/getlocations');
+    this.props.fetchBrands(urlbase+'/getbrands');
+    this.props.fetchEbayMarketplaces(urlbase+'/getebaymarketplaces');
+    this.props.fetchListings(urlbase+'/getlistings', this.props.clickedColumn, this.props.direction === 'ascending' ? 'asc' : 'desc' );
+    }
 
   changeLogin = () => {
     this.setState({

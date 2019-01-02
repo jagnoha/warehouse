@@ -11,7 +11,7 @@ import {
  import '../helpers.js'
  import { changeProductsSelected } from '../modules/actions'
 
-
+ const urlbase = 'http://10.0.0.216:8083';
 //const Product = (key, item, locationsItem, brandItem, userListItem, conditionItem, ebayMarketplaceItem ) => (
 class Product extends Component {    
     
@@ -37,10 +37,10 @@ class Product extends Component {
             <span>
                 
                 
-                <ImagesLightBox server={"http://192.168.1.11:8083/images/"} size='tiny' key={0} pictures = {pictures} photoIndex = {0} />
+                <ImagesLightBox server={urlbase+"/images/"} size='tiny' key={0} pictures = {pictures} photoIndex = {0} />
                 
                 
-                <ImagesLightBox server={"http://192.168.1.11:8083/images/"} size='tiny' key={1} pictures = {pictures} photoIndex = {pictures.length-1} />
+                <ImagesLightBox server={urlbase+"/images/"} size='tiny' key={1} pictures = {pictures} photoIndex = {pictures.length-1} />
                 
             </span>
 

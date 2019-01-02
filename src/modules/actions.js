@@ -37,6 +37,7 @@ import axios from 'axios';
 import _ from 'lodash';
 import '../helpers.js';
 
+const urlbase = 'http://10.0.0.216:8083';
 
 export function locationsHasErrored(bool){
     return {
@@ -402,7 +403,7 @@ export function fixPicturesListing(list, allListings) {
         let sku = window.helpers.getListingFromId(allListings, item).sku;
         console.log(sku);
         
-        let url = "http://192.168.1.11:8083/fixpictures/" + sku; 
+        let url = urlbase+"/fixpictures/" + sku; 
         
         axios.get(url, config)
         .then(response => {
