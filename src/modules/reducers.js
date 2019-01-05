@@ -379,6 +379,8 @@ import { filterByCondition, filterByStatus, filterByUser, filterByMarketplace, s
 import { productsSelected } from './reducers/productsSelected';
 import { productsInPage } from './reducers/productsInPage';
 import { picturesHasErrored, picturesIsLoading } from './reducers/pictures';
+import { urlBase} from './reducers/urlBase';
+
 
 
 
@@ -413,5 +415,6 @@ export default combineReducers({
     productsInPage,
     picturesHasErrored,
     picturesIsLoading,
+    urlBase,
     
 });

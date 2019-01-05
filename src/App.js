@@ -25,7 +25,7 @@ import { locationsFetchData, listingsFetchData, brandsFetchData, ebayMarketplace
 //const store = configureStore();
 
 //const urlbase = 'http://192.168.1.11:8083';
-const urlbase = 'http://10.0.0.216:8083';
+//const urlbase = 'http://10.0.0.216:8083';
 
 class App extends React.PureComponent {
 
@@ -34,10 +34,10 @@ class App extends React.PureComponent {
   }
 
   componentDidMount(){
-    this.props.fetchLocations(urlbase+'/getlocations');
-    this.props.fetchBrands(urlbase+'/getbrands');
-    this.props.fetchEbayMarketplaces(urlbase+'/getebaymarketplaces');
-    this.props.fetchListings(urlbase+'/getlistings', this.props.clickedColumn, this.props.direction === 'ascending' ? 'asc' : 'desc' );
+    this.props.fetchLocations(this.props.urlBase+'/getlocations');
+    this.props.fetchBrands(this.props.urlBase+'/getbrands');
+    this.props.fetchEbayMarketplaces(this.props.urlBase+'/getebaymarketplaces');
+    this.props.fetchListings(this.props.urlBase+'/getlistings', this.props.clickedColumn, this.props.direction === 'ascending' ? 'asc' : 'desc' );
     
     setInterval(this.loadInformationFromServer, 30000);
   }
@@ -52,10 +52,10 @@ class App extends React.PureComponent {
     //const state = store.getState();
   
     //window.client.getListingsFromDB(store, state.globalDirection, state.globalColumn);
-    this.props.fetchLocations(urlbase+'/getlocations');
-    this.props.fetchBrands(urlbase+'/getbrands');
-    this.props.fetchEbayMarketplaces(urlbase+'/getebaymarketplaces');
-    this.props.fetchListings(urlbase+'/getlistings', this.props.clickedColumn, this.props.direction === 'ascending' ? 'asc' : 'desc' );
+    this.props.fetchLocations(this.props.urlBase+'/getlocations');
+    this.props.fetchBrands(this.props.urlBase+'/getbrands');
+    this.props.fetchEbayMarketplaces(this.props.urlBase+'/getebaymarketplaces');
+    this.props.fetchListings(this.props.urlBase+'/getlistings', this.props.clickedColumn, this.props.direction === 'ascending' ? 'asc' : 'desc' );
     }
 
   changeLogin = () => {
@@ -109,6 +109,7 @@ const mapStateToProps = (state) => {
       direction: state.direction,
       users: state.users,
       clickedColumn: state.clickedColumn,      
+      urlBase: state.urlBase, 
   };
 };
 
