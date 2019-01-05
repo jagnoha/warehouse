@@ -4,6 +4,8 @@ import {
     Button, Form, Grid, Header, Image, 
     Menu, Label, Segment, Dropdown, Icon } from 'semantic-ui-react';
 import { BrowserRouter as Router, Route, Link, Redirect, withRouter, browserHistory } from "react-router-dom";
+import { changeListingsFiltered, changeProductsInPage  } from '../modules/actions';
+import { connect } from 'react-redux';
 
 
 class MainMenu extends Component {
@@ -75,9 +77,9 @@ class MainMenu extends Component {
           
             
           <Menu.Item as='a'>
-       Pending Locations
+       Pending to Shelf
       <Label size="mini" circular color='red' >
-        32
+        {this.props.listings.filter(item => item.status === 'offline' && Number(item.quantity) > 0 && item.location.length === 0).length}
       </Label>
       
     </Menu.Item>
@@ -114,4 +116,20 @@ class MainMenu extends Component {
   }
 }
 
-export default MainMenu;
+
+
+const mapStateToProps = (state) => {
+  return {      
+      listings: state.listings,      
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+      changeListingsFiltered: (quantity) => dispatch(changeListingsFiltered(quantity)),
+      changeProductsInPage: (list) => dispatch(changeProductsInPage(list)),
+      
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(MainMenu);

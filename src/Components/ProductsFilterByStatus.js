@@ -44,9 +44,23 @@ class ProductsFilterByStatus extends Component {
               />
               <Form.Field
                 control={Radio}
-                label='Offline'
-                value='offline'
-                checked={this.props.filterByStatus === 'offline'}
+                label='Out of Stock'
+                value='outofstock'
+                checked={this.props.filterByStatus === 'outofstock'}
+                onChange={this.handleChange}            
+              />
+              <Form.Field
+                control={Radio}
+                label='Draft'
+                value='draft'
+                checked={this.props.filterByStatus === 'draft'}
+                onChange={this.handleChange}            
+              />
+              <Form.Field
+                control={Radio}
+                label='Pending to Shelf'
+                value='pendingtoshelf'
+                checked={this.props.filterByStatus === 'pendingtoshelf'}
                 onChange={this.handleChange}            
               />
               <Form.Field

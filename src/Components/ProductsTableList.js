@@ -26,12 +26,31 @@ class ProductsTableList extends Component {
         }
 
         function checkStatusFilterActive(list, statusFilterActive){
-            if (statusFilterActive !== 'ALL'){
-              return list.filter(item => item.status === statusFilterActive)
+            
+            if (statusFilterActive === 'online'){
+              return list.filter(item => item.status === 'online')
+            } else if (statusFilterActive === 'outofstock'){
+              return list.filter(item => item.status === 'offline' && item.quantity === 0)
+            } else if (statusFilterActive === 'draft'){
+              return list.filter(item => item.status === 'offline' && Number(item.quantity) > 0)
+            } else if (statusFilterActive === 'pendingtoshelf'){
+              return list.filter(item => item.status === 'offline' && Number(item.quantity) > 0 && item.location.length === 0)
+            } else if (statusFilterActive === 'error'){
+              return list.filter(item => item.status === 'error')
             } else {
               return list;
             }
           }
+
+          
+          /*
+          
+          if (statusFilterActive !== 'ALL'){
+              return list.filter(item => item.status === statusFilterActive)
+            } else {
+              return list;
+            }
+          }*/
 
           function checkEbayMarketplacesFilterActive(list, ebayMarketplacesFilterActive){
             if (ebayMarketplacesFilterActive !== 'ALL'){
