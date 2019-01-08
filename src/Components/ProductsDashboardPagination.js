@@ -32,11 +32,23 @@ class ProductsDashboardPagination extends Component {
       }
     }
     function checkStatusFilterActive(list, statusFilterActive){
-      if (statusFilterActive !== 'ALL'){
+      /*if (statusFilterActive !== 'ALL'){
         return list.filter(item => item.status === statusFilterActive)
       } else {
         return list;
+      }*/
+      if (statusFilterActive === 'online'){
+        return list.filter(item => item.status === "online")
+      } else if (statusFilterActive === 'draft'){
+        return list.filter(item => item.status === "offline" && item.price === "")
+      } else if (statusFilterActive === 'outofstock'){
+        return list.filter(item => item.status === "offline" && item.quantity === "0")
+      } else if (statusFilterActive === 'pendingtoshelf'){
+        return list.filter(item => item.status === "offline" && item.location === [])
+      } else {
+        return list;
       }
+
     }
 
     function checkEbayMarketplacesFilterActive(list, ebayMarketplacesFilterActive){
@@ -72,7 +84,7 @@ class ProductsDashboardPagination extends Component {
       
     }
 
-  const listingsFiltered = checkSearchFilter(checkUsersFilterActive(checkEbayMarketplacesFilterActive(checkStatusFilterActive(checkConditionsFilterActive(this.props.listings,this.props.filterByCondition), this.props.filterByStatus), this.props.filterByMarketplace), this.props.filterByUser),this.props.filterBySearch);
+  const listingsFiltered = checkSearchFilter(checkUsersFilterActive(checkEbayMarketplacesFilterActive(checkStatusFilterActive(checkConditionsFilterActive(this.props.listings, this.props.filterByCondition), this.props.filterByStatus), this.props.filterByMarketplace), this.props.filterByUser),this.props.filterBySearch);
   
     //const totalPages = this.props.listings.chunk(this.props.productsByPage).length;
     const totalPages = listingsFiltered.chunk(this.props.productsByPage).length;
