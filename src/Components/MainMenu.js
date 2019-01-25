@@ -4,7 +4,7 @@ import {
     Button, Form, Grid, Header, Image, 
     Menu, Label, Segment, Dropdown, Icon } from 'semantic-ui-react';
 import { BrowserRouter as Router, Route, Link, Redirect, withRouter, browserHistory } from "react-router-dom";
-import { changeListingsFiltered, changeProductsInPage  } from '../modules/actions';
+import { changeListingsFiltered, changeProductsInPage, userActiveFetchData, userActiveLogout  } from '../modules/actions';
 import { connect } from 'react-redux';
 
 
@@ -17,6 +17,12 @@ class MainMenu extends Component {
 
   handleLogoutClick = (e) => {
       console.log(e);
+      //this.props.userActiveUpdate([]);
+      this.props.userActiveLogout();
+      /*this.setState({
+        activeItem: 'Listings',
+      })*/
+      //window.location.reload(true);
   }
 
   render() {
@@ -85,7 +91,7 @@ class MainMenu extends Component {
     </Menu.Item>
     <Menu.Item><Icon name="ellipsis vertical" /></Menu.Item>
         <Menu.Item>
-              Hi, Orr
+              Hi, {this.props.userActive.username}
         </Menu.Item>
             
         <Dropdown direction="left" item icon='settings' simple>
@@ -105,6 +111,8 @@ class MainMenu extends Component {
               active={activeItem === 'logout'}
               onClick={this.handleLogoutClick}
               icon='sign-out'
+              as={ Link }
+              to={''}
               
             />
             
@@ -120,7 +128,9 @@ class MainMenu extends Component {
 
 const mapStateToProps = (state) => {
   return {      
-      listings: state.listings,      
+      listings: state.listings,
+      userActive: state.userActive,
+      urlBase: state.urlBase,      
   };
 };
 
@@ -128,7 +138,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
       changeListingsFiltered: (quantity) => dispatch(changeListingsFiltered(quantity)),
       changeProductsInPage: (list) => dispatch(changeProductsInPage(list)),
-      
+      userActiveLogout: () => dispatch(userActiveLogout()),
+      userActiveFetchData: (url) => dispatch(userActiveFetchData(url)),
   };
 };
 

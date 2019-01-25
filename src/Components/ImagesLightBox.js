@@ -1,17 +1,24 @@
 import React, { Component } from 'react'
 import { Image } from 'semantic-ui-react'
 import Lightbox from 'react-image-lightbox'
+import ImageUploader from 'react-images-upload'
 
 class ImagesLightBox extends Component {
   
     state = {
       photoIndex: this.props.photoIndex,
       isOpen: false,
+      pictures: this.props.pictures,
     }
+
+    
     
     render() {
       const { photoIndex, isOpen } = this.state;
-      const images = this.props.pictures;
+      //const images = this.props.pictures;
+      const images = this.state.pictures;
+      
+      
       const server = this.props.server;
       
       return (
@@ -43,6 +50,7 @@ class ImagesLightBox extends Component {
               }
             />
           )}
+          
         </span>
       );
     }

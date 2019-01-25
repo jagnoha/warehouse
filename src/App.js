@@ -21,6 +21,7 @@ import './client.js';
 //import configureStore from './modules/configureStore';
 import { connect } from 'react-redux';
 import { locationsFetchData, listingsFetchData, brandsFetchData, ebayMarketplacesFetchData } from './modules/actions';
+//import ListingForm from './Components/ListingForm';
 
 //const store = configureStore();
 
@@ -29,9 +30,9 @@ import { locationsFetchData, listingsFetchData, brandsFetchData, ebayMarketplace
 
 class App extends React.PureComponent {
 
-  state = {
-    isLogin: true,
-  }
+  /*state = {
+    isLogin: false,
+  }*/
 
   componentDidMount(){
     this.props.fetchLocations(this.props.urlBase+'/getlocations');
@@ -39,7 +40,7 @@ class App extends React.PureComponent {
     this.props.fetchEbayMarketplaces(this.props.urlBase+'/getebaymarketplaces');
     this.props.fetchListings(this.props.urlBase+'/getlistings', this.props.clickedColumn, this.props.direction === 'ascending' ? 'asc' : 'desc' );
     
-    setInterval(this.loadInformationFromServer, 30000);
+    setInterval(this.loadInformationFromServer, 60000);
   }
 
   //componentDidMount(){
@@ -52,21 +53,26 @@ class App extends React.PureComponent {
     //const state = store.getState();
   
     //window.client.getListingsFromDB(store, state.globalDirection, state.globalColumn);
+    
+    
+    
     this.props.fetchLocations(this.props.urlBase+'/getlocations');
     this.props.fetchBrands(this.props.urlBase+'/getbrands');
     this.props.fetchEbayMarketplaces(this.props.urlBase+'/getebaymarketplaces');
-    this.props.fetchListings(this.props.urlBase+'/getlistings', this.props.clickedColumn, this.props.direction === 'ascending' ? 'asc' : 'desc' );
-    }
-
-  changeLogin = () => {
-    this.setState({
-      isLogin: this.state.isLogin ? false : true,
-    })
+    //if (this.props.isLoadingListings !== true){
+           this.props.fetchListings(this.props.urlBase+'/getlistings', this.props.clickedColumn, this.props.direction === 'ascending' ? 'asc' : 'desc' );
+    //}
   }
+
+  //changeLogin = () => {
+    /*this.setState({
+      isLogin: this.state.isLogin ? false : true,
+    })*/
+  //}
 
   render() {    
     //const state = store.getState();
-    if (this.state.isLogin){
+    if (this.props.userActive !== ""){
       return (
         <div>
           
@@ -76,7 +82,9 @@ class App extends React.PureComponent {
             <Route path="/locations" component={Locations} />
             <Route path="/brands" component={Brands} />
             <Route path="/reports" component={Reports} />
-          
+            
+            
+            
         </div>
       )
     } else {
@@ -106,10 +114,12 @@ const mapStateToProps = (state) => {
       hasErroredEbayMarketplaces: state.ebayMarketplacesHasErrored,
       isLoadingEbayMarketplaces: state.ebayMarketplacesIsLoading,*/
       //activePage: state.activePage,
+      isLoadingListings: state.listingsIsLoading,
       direction: state.direction,
       users: state.users,
       clickedColumn: state.clickedColumn,      
-      urlBase: state.urlBase, 
+      urlBase: state.urlBase,
+      userActive: state.userActive, 
   };
 };
 

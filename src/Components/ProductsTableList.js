@@ -114,7 +114,7 @@ class ProductsTableList extends Component {
         
         //changeProductsInPage(listingsFiltered.chunk(this.props.productsByPage)[Number(this.props.activePage)-1].map(item => item.uuid));
         
-        if (this.props.listings.length < 1){
+        if (this.props.listings.length < 1 || this.props.userActiveIsLoading === true){
             return (
                 <Dimmer active inverted>
                     <Loader size='large'>Loading</Loader>
@@ -190,7 +190,7 @@ class ProductsTableList extends Component {
                 userListItem = { window.helpers.getNameFromId(this.props.users, item.authorId) }
                 //userListItem = {item.authorId}
                 
-                conditionItem = {window.helpers.getConditionFromId(this.props.conditions, item.condition)}
+                //conditionItem = {window.helpers.getConditionFromId(this.props.conditions, item.condition)}
                 ebayMarketplaceItem = {window.helpers.getEbayMarketplaceFromId(this.props.ebayMarketplaces, item.ebayAccount)}
                 
             /> 
@@ -228,7 +228,8 @@ const mapStateToProps = (state) => {
         ebayMarketplaces: state.ebayMarketplaces,
         activePage: state.activePage,
         productsByPage: state.productsByPage,
-        productsInPage: state.productsInPage,      
+        productsInPage: state.productsInPage,
+        userActiveIsLoading: state.userActiveIsLoading,      
     };
   };
   

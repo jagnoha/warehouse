@@ -8,6 +8,10 @@ import 'semantic-ui-css/semantic.min.css';
 import configureStore from './modules/configureStore';
 import { Provider } from 'react-redux';
 
+
+
+
+//const store = enHanceCreateStore();
 const store = configureStore();
 
 //import '../semantic/dist/semantic.min.css';

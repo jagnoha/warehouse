@@ -2,19 +2,68 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import ProductInfo from './ProductInfo'
 import { 
-    Button, Label, Table, Checkbox, Icon, Placeholder
+    Button, Label, Table, Header, Image, Grid, Checkbox, Icon, Modal, 
  } from 'semantic-ui-react'
 
  import Price from './Price'
  import ImagesLightBox from './ImagesLightBox'
+ import ImagesLightBoxForm from './ImagesLightBoxForm'
  import { connect } from 'react-redux'
  import '../helpers.js'
- import { changeProductsSelected } from '../modules/actions'
+ import { changeProductsSelected, listingDraftDeleteDatabase } from '../modules/actions'
+ //import { BrowserRouter as Router, Route, Redirect, Link } from "react-router-dom";
+ import ListingForm from './ListingForm';
+ import AmazonTag from './AmazonTag';
+ import ebayLogo from '../ebay-brands.svg';
+ import '../helpers.js';
+ import ImageUploader from 'react-images-upload';
+ import ImageList from './ImageList';
 
  //const urlbase = 'http://10.0.0.216:8083';
  //const urlbase = 'http://192.168.1.11:8083';
 //const Product = (key, item, locationsItem, brandItem, userListItem, conditionItem, ebayMarketplaceItem ) => (
-class Product extends Component {    
+class Product extends Component {
+    
+    state = {
+        modalOpen: false,
+        modalDeleteOpen: false,
+        //pictures: this.props.item.pictures.map(item => item),
+    }
+
+    
+
+    onDrop = (picture) => {
+        console.log(picture);
+        /*this.setState({
+            pictures: this.state.pictures.concat(picture),
+        });*/
+    }
+
+    handleOpen = () => this.setState({ modalOpen: true })
+
+    handleDeleteOpen = () => this.setState({ modalDeleteOpen: true })
+
+    handleClose = () => { 
+        
+        this.setState({ modalOpen: false })
+    
+    }
+
+    handleDeleteClose = () => { 
+        
+        this.setState({ modalDeleteOpen: false })
+    
+    }
+
+    handleDeleteListing = () => {
+
+        let listingsTemp = this.props.listings.filter(item => item.sku !== this.props.item.sku);
+        
+        this.props.listingDraftDeleteDatabase(this.props.urlBase + '/deleteofflinelisting/' + this.props.item.sku, listingsTemp )
+        
+        this.setState({ modalDeleteOpen: false })
+    
+    }
     
     handleChecked = onClick => (e, data) => {
         
@@ -31,28 +80,55 @@ class Product extends Component {
     render(){
 
     const productsSelected = this.props.productsSelected;
-    const uuid = this.props.item.uuid;    
+    const uuid = this.props.item.uuid;   
+
+        
+    /*if (this.state.toEditProduct === true) {
+        return <ListingForm />
+    }*/
     
     const imagesTable = (pictures) => {
         return (
             <span>
                 
+                <ImageList key = {pictures[0]} id = {pictures[0]} imageUrl = {this.props.urlBase+"/images/" + pictures[0] + ".jpg"} />
+                <ImageList key = {pictures[pictures.length-1]} id = {pictures[pictures.length-1]} imageUrl = {this.props.urlBase+"/images/" + pictures[pictures.length-1] + ".jpg"} />
                 
-                <ImagesLightBox server={this.props.urlBase+"/images/"} size='tiny' key={0} pictures = {pictures} photoIndex = {0} />
+                
+                {/*<ImagesLightBox server={this.props.urlBase+"/images/"} size='tiny' key={0} pictures = {pictures} photoIndex = {0} />
                 
                 
                 <ImagesLightBox server={this.props.urlBase+"/images/"} size='tiny' key={1} pictures = {pictures} photoIndex = {pictures.length-1} />
-                
+                */}
             </span>
 
         )
     }
 
+    const viewStatus = (status, quantity) => {
+        if (status === "online"){
+            return (
+                <Label size='small' color='green'>Online</Label>
+            )
+        } else if (status === "offline" && Number(quantity) < 1) {
+            return (
+                <Label size='small' color='red'>Out of Stock</Label>
+            )
+        } else if (status === "offline" && Number(quantity) > 0) {
+            return (
+                <Label size='small' color='yellow'>Draft</Label>
+            )
+        }
+    }
+
 
     return (
+
+        
         
         
     <Table.Row>
+                    
                     <Table.Cell collapsing>
                       <Checkbox slider
                         checked={window.helpers.isProductChecked(productsSelected, uuid)}
@@ -81,7 +157,8 @@ class Product extends Component {
                       </Table.Cell>                    
                     <Table.Cell>
                       
-                      {this.props.conditionItem}
+                      {/*this.props.conditionItem*/}
+                      {window.helpers.getConditionFromId(this.props.conditions, this.props.item.condition)}
                       <div className='App-secondary-table-title'>{this.props.item.condition === '1' && this.props.item.conditionDescription !== null ? this.props.item.conditionDescription.map(item => item + ' ') : null }</div>
                     </Table.Cell>
                     <Table.Cell>
@@ -116,11 +193,86 @@ class Product extends Component {
                     <Table.Cell collapsing>
                       
       
-                      <Button icon='edit' />  
-                      <Button icon='trash' />
-                    </Table.Cell>              
-              </Table.Row>
+                      <Modal 
+                        trigger={<Button onClick = {this.handleOpen} icon='edit' />}
+                        open={this.state.modalOpen}
+                        onClose={this.handleClose}
+                        closeOnEscape={false}
+                        closeOnDimmerClick={false}
+                      >       
+                        <Modal.Header>
 
+                          
+                            <h3>{viewStatus(this.props.item.status, this.props.item.quantity)} {this.props.item.title}</h3>
+                            <p> SKU: {this.props.item.sku}</p>
+                            
+                            
+                            
+                            {/*<div>
+                            <Image.Group>
+
+                       
+
+                        <ImagesLightBoxForm 
+                            server = {this.props.urlBase+"/images/"} 
+                            size='tiny' 
+                            pictures = {this.state.pictures}
+                            deletePicture = {this.deletePicture}
+                            />
+
+                   
+
+
+                              
+                              </Image.Group>
+
+                            </div>*/}
+                            
+                            
+                            <div>
+                                <Label><Image avatar spaced='right' src={ebayLogo} />{this.props.ebayMarketplaceItem}</Label>
+                                <AmazonTag amazon={this.props.item.asin} />                            
+                            </div>
+                        </Modal.Header>
+                        <Modal.Content scrolling>
+                            <ListingForm pictures = {this.state.pictures} handleClose = {this.handleClose} brands = {this.props.brands} 
+                            item = {this.props.item} urlBase = {this.props.urlBase} locations = {this.props.locations} />
+                        </Modal.Content>
+                      </Modal>
+                      
+                      {
+                          this.props.item.status === 'offline' ?
+                      <Modal 
+                        trigger={<Button onClick = {this.handleDeleteOpen} icon='trash' />}
+                        open={this.state.modalDeleteOpen}
+                        onClose={this.handleDeleteClose}
+                        closeOnEscape={false}
+                        closeOnDimmerClick={false}
+                      >
+                      <Header icon='trash' content='Delete Listing' />
+                      <Modal.Content>
+                          <h3>Are you sure you want to delete "{this.props.item.title}"</h3>
+                      </Modal.Content>
+
+                      <Modal.Actions>
+                        <Button onClick = {this.handleDeleteClose} color='red'>
+                            <Icon name='remove' /> No
+                        </Button>
+                        <Button onClick = {this.handleDeleteListing} color='green'>
+                            <Icon name='checkmark' /> Yes
+                        </Button>
+                      </Modal.Actions>
+
+                      </Modal>: <span></span>   
+                      }  
+
+                      
+                     
+                      
+                    </Table.Cell>   
+                               
+              </Table.Row>
+              
     )
 
 }
@@ -176,8 +328,16 @@ const mapStateToProps = (state) => {
     return {
         productsSelected: state.productsSelected,
         picturesIsLoading: state.picturesIsLoading,
-        urlBase: state.urlBase, 
-        /*locations: state.locations,
+        urlBase: state.urlBase,
+        ebayMarketplaces: state.ebayMarketplaces, 
+        brands: state.brands,
+        locations: state.locations,
+        listingDraftIsLoading: state.listingDraftIsLoading,
+        direction: state.direction,
+        clickedColumn: state.clickedColumn, 
+        listings: state.listings,
+        conditions: state.conditions,
+        /*
         hasErroredLocations: state.locationsHasErrored,
         isLoadingLocations: state.locationsIsLoading,
         listings: state.listings,
@@ -190,7 +350,7 @@ const mapStateToProps = (state) => {
         searchIsChecked: state.searchIsChecked,
         hasErroredListings: state.listingsHasErrored,
         isLoadingListings: state.listingsIsLoading,
-        brands: state.brands,
+        
         hasErroredBrands: state.brandsHasErrored,
         isLoadingBrands: state.brandsIsLoading,
         conditions: state.conditions,
@@ -204,9 +364,11 @@ const mapStateToProps = (state) => {
   const mapDispatchToProps = (dispatch) => {
     return {
         /*fetchLocations: (url) => dispatch(locationsFetchData(url)),
-        fetchListings: (url) => dispatch(listingsFetchData(url)),
         fetchBrands: (url) => dispatch(brandsFetchData(url))*/
+        //fetchListings: (url, urlListing, clickedColumn, order) => dispatch(listingsFetchData(url, urlListing, clickedColumn, order)),
         changeProductsSelected: (list) => dispatch(changeProductsSelected(list)),
+        listingDraftDeleteDatabase: (url, listings) => dispatch(listingDraftDeleteDatabase(url, listings)),
+        
     };
   };
 

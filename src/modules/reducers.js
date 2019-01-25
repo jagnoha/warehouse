@@ -380,6 +380,10 @@ import { productsSelected } from './reducers/productsSelected';
 import { productsInPage } from './reducers/productsInPage';
 import { picturesHasErrored, picturesIsLoading } from './reducers/pictures';
 import { urlBase} from './reducers/urlBase';
+import { newBrand } from './reducers/newBrand';
+import { newLocation } from './reducers/newLocation';
+import { listingDraft, listingDraftHasErrored, listingDraftIsLoading } from './reducers/listingDraft';
+import { userActive, userActiveHasErrored, userActiveIsLoading } from './reducers/userActive';
 
 
 
@@ -416,5 +420,13 @@ export default combineReducers({
     picturesHasErrored,
     picturesIsLoading,
     urlBase,
+    newBrand,
+    newLocation,
+    listingDraft,
+    listingDraftHasErrored,    
+    listingDraftIsLoading,
+    userActive,
+    userActiveHasErrored,    
+    userActiveIsLoading,
     
 });

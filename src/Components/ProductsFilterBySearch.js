@@ -26,7 +26,7 @@ class ProductsFilterBySearch extends Component {
         this.props.changeProductsSelected([]);
         this.props.changeActivePage(1);
         //console.log(this.state.valueSearch);
-        this.props.changeFilterBySearch(this.state.valueSearch);
+        this.props.changeFilterBySearch(this.state.valueSearch.trim());
         this.props.changeSearchIsChecked(true);
     }
 

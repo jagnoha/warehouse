@@ -37,7 +37,7 @@ import axios from 'axios';
 import _ from 'lodash';
 import '../helpers.js';
 
-const urlbase = 'http://10.0.0.216:8083';
+const urlbase = 'https://4a813046.ngrok.io';
 
 export function locationsHasErrored(bool){
     return {
@@ -97,6 +97,13 @@ export function listingsIsLoading(bool){
     return {
         type: 'LISTINGS_IS_LOADING',
         isLoading: bool
+    };
+}
+
+export function listingsUpdate(listings){
+    return {
+        type: 'LISTINGS_UPDATE',
+        listings
     };
 }
 
@@ -251,6 +258,65 @@ export function brandsFetchData(url) {
         .catch(() => dispatch(brandsHasErrored(true)));
     }
 }
+
+
+//************************************* */
+
+export function userActiveLogout() {
+    return (dispatch) => {
+        dispatch({type: 'RESET'})
+    }
+}
+
+export function userActiveHasErrored(bool){
+    return {
+        type: 'USER_ACTIVE_HAS_ERRORED',
+        hasErrored: bool
+    };
+}
+
+export function userActiveIsLoading(bool){
+    return {
+        type: 'USER_ACTIVE_IS_LOADING',
+        isLoading: bool
+    };
+}
+
+export function userActiveFetchDataSuccess(userActive) {
+    return {
+        type: 'USER_ACTIVE_FETCH_DATA_SUCCESS',
+        userActive
+    };
+}
+
+export function userActiveFetchData(url) {
+    return (dispatch) => {
+        dispatch(userActiveIsLoading(true));
+
+        let config = {
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+            }
+        }
+        axios.get(url, config)
+        .then(response => {
+            
+            if (response.statusText !== "OK"){
+                throw Error(response.statusText);
+            }
+
+            dispatch(userActiveIsLoading(false));
+            
+            return response.data
+
+        })
+        .then((userActive) => dispatch(userActiveFetchDataSuccess(userActive)))
+        .catch(() => dispatch(userActiveHasErrored(true)));
+    }
+}
+
+
+//***************************************** */
 
 export function ebayMarketplacesHasErrored(bool){
     return {
@@ -428,6 +494,7 @@ export function fixPicturesListing(list, allListings) {
 
     }
 
+
     
 
 
@@ -458,6 +525,188 @@ export function fixPicturesListing(list, allListings) {
 
 
 }
+
+export function brandAddDatabase(url, id, value) {
+    return (dispatch) => {
+    fetch(url,{
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            //'Accept': 'application/json',
+            //'Content-Type': 'application/json',
+        }
+    })
+    .then((response) => {
+        
+        dispatch(addNewBrand({id, value}));
+        
+        return response
+    
+    }).catch((error) => {
+      console.error(error);
+    });
+  }
+
+}
+
+
+export function addNewBrand(newBrand) {
+    return {
+        type: 'ADD_NEW_BRAND',
+        newBrand
+    };
+}
+
+export function locationAddDatabase(url, id, value) {
+    return (dispatch) => {
+    fetch(url,{
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            //'Accept': 'application/json',
+            //'Content-Type': 'application/json',
+        }
+    })
+    .then((response) => {
+        
+        dispatch(addNewLocation({id, value}));
+        
+        return response
+    
+    }).catch((error) => {
+      console.error(error);
+    });
+  }
+
+}
+
+
+export function addNewLocation(newLocation) {
+    return {
+        type: 'ADD_NEW_LOCATION',
+        newLocation
+    };
+}
+
+export function listingDraftUpdated(listingDraft) {
+    return {
+        type: 'LISTING_DRAFT_UPDATED',
+        listingDraft
+    };
+}
+
+export function listingDraftHasErrored(bool){
+    return {
+        type: 'LISTING_DRAFT_HAS_ERRORED',
+        hasErrored: bool
+    };
+}
+
+export function listingDraftIsLoading(bool){
+    return {
+        type: 'LISTING_DRAFT_IS_LOADING',
+        isLoading: bool
+    };
+}
+
+export function listingDraftDeleteDatabase(url, listings) {
+    return (dispatch) => {
+    dispatch(listingDraftIsLoading(true))    
+    fetch(url,{
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            //'Accept': 'application/json',
+            //'Content-Type': 'application/json',
+        }
+    })
+    .then((response) => {
+
+        dispatch(listingDraftIsLoading(false));
+
+        dispatch(listingsUpdate(listings));
+        
+        return response
+    
+    }).catch((error) => {
+      console.error(error);
+    });
+  }
+
+}
+
+export function listingDraftUpdateDatabase(url, listingDraft, listings) {
+    return (dispatch) => {
+    dispatch(listingDraftIsLoading(true))    
+    fetch(url,{
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            //'Accept': 'application/json',
+            //'Content-Type': 'application/json',
+        }
+    })
+    .then((response) => {
+
+        dispatch(listingDraftIsLoading(false));
+        dispatch(listingsUpdate(listings));
+        dispatch(listingDraftUpdated(listingDraft));
+
+        return response
+    
+    }).catch((error) => {
+      console.error(error);
+    });
+  }
+
+}
+
+export function listingUpdateDatabase(url, listingDraft, listings) {
+    return (dispatch) => {
+    dispatch(listingDraftIsLoading(true))    
+    fetch(url,{
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            //'Accept': 'application/json',
+            //'Content-Type': 'application/json',
+        }
+    })
+    .then((response) => {
+
+        dispatch(listingDraftIsLoading(false));
+        dispatch(listingsUpdate(listings));
+        dispatch(listingDraftUpdated(listingDraft));
+
+        return response
+    
+    }).catch((error) => {
+      console.error(error);
+    });
+  }
+
+}
+
+export function listingCreateEbay(urlUpdate, urlCreate, listingDraft, listings) {
+    return (dispatch) => {
+    dispatch(listingUpdateDatabase(urlUpdate, listingDraft))    
+    fetch(urlCreate,{
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            //'Accept': 'application/json',
+            //'Content-Type': 'application/json',
+        }
+    })
+    .then((response) => {
+
+        dispatch(listingDraftIsLoading(false));
+        dispatch(listingsUpdate(listings));
+        dispatch(listingDraftUpdated(listingDraft));
+
+        return response
+    
+    }).catch((error) => {
+      console.error(error);
+    });
+  }
+
+}
+
 
 
 

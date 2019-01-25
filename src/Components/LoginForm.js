@@ -3,12 +3,56 @@ import '../App.css';
 import logo from '../logo.svg';
 import { 
   Button, Form, Grid, Header, Image, 
-  Menu, Label, Segment, Dropdown, Icon } from 'semantic-ui-react';
+  Menu, Dimmer, Loader, Segment, Dropdown, Icon } from 'semantic-ui-react';
+  import { userActiveFetchData, ebayMarketplacesFetchData } from '../modules/actions';
 
   import { connect } from 'react-redux';
 
 class LoginForm extends Component {
-    render() {
+  
+  state = {
+    fields: {
+      username: '',
+      password: '',
+    }
+  }
+
+  componentDidMount(){
+    //this.props.fetchLocations(this.props.urlBase+'/getlocations');
+    //this.props.fetchBrands(this.props.urlBase+'/getbrands');
+    this.props.fetchEbayMarketplaces(this.props.urlBase+'/getebaymarketplaces');
+    //this.props.fetchListings(this.props.urlBase+'/getlistings', this.props.clickedColumn, this.props.direction === 'ascending' ? 'asc' : 'desc' );
+  }
+
+  handleOnChangeField = (e, data) => {
+    this.setState(
+      {
+        fields: {...this.state.fields, [data.id]: data.value}
+      }
+    )
+  }
+
+  handleClickLogin = () => {
+    
+    console.log(this.state.fields.username);
+    console.log(this.state.fields.password);
+    
+    this.props.userActiveFetchData(this.props.urlBase + '/finduser/' + this.state.fields.username + '/' + this.state.fields.password);
+  }
+
+
+  
+  
+  render() {
+
+    if (this.props.userActiveIsLoading === true){
+      return (
+          <Dimmer active inverted>
+              <Loader size='large'>Loading</Loader>
+          </Dimmer>
+      )
+    } 
+
       return (
         <div className='login-form'>
         {/*
@@ -30,16 +74,19 @@ class LoginForm extends Component {
             </Header>
             <Form size='large'>
               <Segment stacked>
-                <Form.Input fluid icon='user' iconPosition='left' placeholder='Username' />
+                <Form.Input value = {this.state.fields.username} id = "username" fluid icon='user' iconPosition='left' placeholder='Username' onChange={this.handleOnChangeField} />
                 <Form.Input
+                  value = {this.state.fields.password}
+                  id = "password"
                   fluid
                   icon='lock'
                   iconPosition='left'
                   placeholder='Password'
                   type='password'
+                  onChange={this.handleOnChangeField}
                 />
     
-                <Button color='teal' fluid size='large'>
+                <Button color='teal' onClick = {this.handleClickLogin} fluid size='large'>
                   Login
                 </Button>
               </Segment>
@@ -57,17 +104,19 @@ class LoginForm extends Component {
 
   const mapStateToProps = (state) => {
     return {
-        users: state.users,
+        //users: state.users,
+        userActive: state.userActive,
+        urlBase: state.urlBase,
+        userActiveIsLoading: state.userActiveIsLoading,
     };
   };
   
-  /*const mapDispatchToProps = (dispatch) => {
+  const mapDispatchToProps = (dispatch) => {
     return {
-        fetchLocations: (url) => dispatch(locationsFetchData(url)),
-        fetchListings: (url) => dispatch(listingsFetchData(url)),
-        fetchBrands: (url) => dispatch(brandsFetchData(url))
+        userActiveFetchData: (url) => dispatch(userActiveFetchData(url)),
+        fetchEbayMarketplaces: (url) => dispatch(ebayMarketplacesFetchData(url))
     };
-  };*/
+  };
 
-export default connect(mapStateToProps)(LoginForm);
+export default connect(mapStateToProps, mapDispatchToProps)(LoginForm);
 //export default Listings;
