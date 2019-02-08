@@ -37,7 +37,7 @@ import axios from 'axios';
 import _ from 'lodash';
 import '../helpers.js';
 
-const urlbase = 'https://4a813046.ngrok.io';
+const urlbase = 'https://723ad24b.ngrok.io';
 
 export function locationsHasErrored(bool){
     return {
