@@ -1,5 +1,6 @@
 const fields = {
     "sku": "",
+    "itemId": "",
     "uuid": "",
     "pictures": [],
     "quantity": "1",

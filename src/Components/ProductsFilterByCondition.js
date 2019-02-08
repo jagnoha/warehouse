@@ -71,6 +71,14 @@ class ProductsFilterByCondition extends Component {
                 checked={this.props.filterByCondition === '4'}
                 onChange={this.handleChange}          
               />
+              <Form.Field
+                control={Radio}
+                label='Remanufatured'  
+                value='5'
+                checked={this.props.filterByCondition === '5'}
+                onChange={this.handleChange}          
+              />
+              
               
             </Form.Group>
           </Form>      

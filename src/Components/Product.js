@@ -10,7 +10,7 @@ import {
  import ImagesLightBoxForm from './ImagesLightBoxForm'
  import { connect } from 'react-redux'
  import '../helpers.js'
- import { changeProductsSelected, listingDraftDeleteDatabase } from '../modules/actions'
+ import { changeProductsSelected, listingDraftDeleteDatabase, listingDeleteDatabase } from '../modules/actions'
  //import { BrowserRouter as Router, Route, Redirect, Link } from "react-router-dom";
  import ListingForm from './ListingForm';
  import AmazonTag from './AmazonTag';
@@ -39,7 +39,9 @@ class Product extends Component {
         });*/
     }
 
-    handleOpen = () => this.setState({ modalOpen: true })
+    handleOpen = () => {
+        this.setState({ modalOpen: true })        
+    }
 
     handleDeleteOpen = () => this.setState({ modalDeleteOpen: true })
 
@@ -59,8 +61,13 @@ class Product extends Component {
 
         let listingsTemp = this.props.listings.filter(item => item.sku !== this.props.item.sku);
         
+        if (this.props.item.status === "offline") {
+
         this.props.listingDraftDeleteDatabase(this.props.urlBase + '/deleteofflinelisting/' + this.props.item.sku, listingsTemp )
         
+        } else {
+            this.props.listingDeleteDatabase(this.props.urlBase + '/deletelisting/' + this.props.item.sku, listingsTemp )
+        }
         this.setState({ modalDeleteOpen: false })
     
     }
@@ -192,7 +199,7 @@ class Product extends Component {
                     <Table.Cell><div>{this.props.item.timestamp}</div> <span className='App-secondary-table-title'>{this.props.item.lastModified}</span></Table.Cell>
                     <Table.Cell collapsing>
                       
-      
+                    { (this.props.picturesIsLoading.filter(item => item === this.props.item.uuid).length === 0 && this.props.item.pictures !== 'PENDING') ?  <span>
                       <Modal 
                         trigger={<Button onClick = {this.handleOpen} icon='edit' />}
                         open={this.state.modalOpen}
@@ -206,29 +213,6 @@ class Product extends Component {
                             <h3>{viewStatus(this.props.item.status, this.props.item.quantity)} {this.props.item.title}</h3>
                             <p> SKU: {this.props.item.sku}</p>
                             
-                            
-                            
-                            {/*<div>
-                            <Image.Group>
-
-                       
-
-                        <ImagesLightBoxForm 
-                            server = {this.props.urlBase+"/images/"} 
-                            size='tiny' 
-                            pictures = {this.state.pictures}
-                            deletePicture = {this.deletePicture}
-                            />
-
-                   
-
-
-                              
-                              </Image.Group>
-
-                            </div>*/}
-                            
-                            
                             <div>
                                 <Label><Image avatar spaced='right' src={ebayLogo} />{this.props.ebayMarketplaceItem}</Label>
                                 <AmazonTag amazon={this.props.item.asin} />                            
@@ -236,12 +220,13 @@ class Product extends Component {
                         </Modal.Header>
                         <Modal.Content scrolling>
                             <ListingForm pictures = {this.state.pictures} handleClose = {this.handleClose} brands = {this.props.brands} 
-                            item = {this.props.item} urlBase = {this.props.urlBase} locations = {this.props.locations} />
+                            item = {this.props.item} urlBase = {this.props.urlBase} locations = {this.props.locations} 
+                            handleDeleteListing = {this.handleDeleteListing} handleDeleteClose = {this.handleDeleteClose} 
+                            modalDeleteOpen = {this.state.modalDeleteOpen} handleDeleteOpen = {this.handleDeleteOpen} />
                         </Modal.Content>
                       </Modal>
                       
-                      {
-                          this.props.item.status === 'offline' ?
+                      
                       <Modal 
                         trigger={<Button onClick = {this.handleDeleteOpen} icon='trash' />}
                         open={this.state.modalDeleteOpen}
@@ -263,9 +248,9 @@ class Product extends Component {
                         </Button>
                       </Modal.Actions>
 
-                      </Modal>: <span></span>   
-                      }  
-
+                    </Modal></span> : <span></span> }   
+                       
+                    
                       
                      
                       
@@ -333,10 +318,12 @@ const mapStateToProps = (state) => {
         brands: state.brands,
         locations: state.locations,
         listingDraftIsLoading: state.listingDraftIsLoading,
+        listingDraft: state.listingDraft,
         direction: state.direction,
         clickedColumn: state.clickedColumn, 
         listings: state.listings,
         conditions: state.conditions,
+        listingActive: state.listingActive,
         /*
         hasErroredLocations: state.locationsHasErrored,
         isLoadingLocations: state.locationsIsLoading,
@@ -368,6 +355,7 @@ const mapStateToProps = (state) => {
         //fetchListings: (url, urlListing, clickedColumn, order) => dispatch(listingsFetchData(url, urlListing, clickedColumn, order)),
         changeProductsSelected: (list) => dispatch(changeProductsSelected(list)),
         listingDraftDeleteDatabase: (url, listings) => dispatch(listingDraftDeleteDatabase(url, listings)),
+        listingDeleteDatabase: (url, listings) => dispatch(listingDeleteDatabase(url, listings)),
         
     };
   };

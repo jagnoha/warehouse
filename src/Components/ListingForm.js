@@ -3,10 +3,11 @@ import '../App.css';
 import '../helpers.js';
 import { 
     Button, Form, Input, TextArea, Grid, Header, Image, 
-    Menu, Label, Segment, Dropdown, Icon, Checkbox } from 'semantic-ui-react';
+    Menu, Label, Segment, Dropdown, Icon, Checkbox, Modal } from 'semantic-ui-react';
 import ImagesLightBoxForm from './ImagesLightBoxForm'
 import { connect } from 'react-redux';
-import { brandAddDatabase, locationAddDatabase, listingDraftUpdated, listingDraftUpdateDatabase, listingUpdateDatabase, listingCreateEbay } from '../modules/actions'
+import { brandAddDatabase, locationAddDatabase, listingDraftUpdated, listingDraftUpdateDatabase, 
+    listingRelistEbay, listingUpdateDatabase, listingCreateEbay } from '../modules/actions'
 
 import { FilePond, File, registerPlugin } from 'react-filepond';
 import 'filepond/dist/filepond.min.css';
@@ -58,6 +59,7 @@ class ListingForm extends Component {
 
         }
 
+        
         handleDrop(files) {
             console.log(files);
             /*var data = new FormData();
@@ -212,7 +214,8 @@ class ListingForm extends Component {
             );*/
             let tempFields = { ...this.state.fields, 
                 ['conditionDescription']: this.state.fields.condition !== '0' ? [this.state.fields.conditionDescription] : [],
-                ['pictures']: this.state.pictures.map(item => item),                                           
+                ['pictures']: this.state.pictures.map(item => item),
+                ['status']: 'online',                                           
             };
 
             let listingsTemp = this.props.listings.map(item => { if (item.sku === this.props.item.sku) { return tempFields}  return item })
@@ -244,6 +247,68 @@ class ListingForm extends Component {
                 this.props.handleClose();
             
         }
+
+        handleSaveFormRelist = () => {
+
+            this.setState(
+                {
+                    fields: 
+                    { ...this.state.fields, 
+                        ['conditionDescription']: this.state.fields.condition !== '0' ? this.state.fields.conditionDescription : [],
+                        ['pictures']: this.state.pictures.map(item => item),
+                        
+                        /*['hasCompatibility']: this.state.currentHasCompatibility,*/                         
+                    }  
+                
+                }
+            )
+            
+            /*const testingUrl = "https://mighty-bulldog-12.localtunnel.me";
+
+            this.props.listingCreateEbay(
+                testingUrl + '/updatedraftlisting/' + this.state.fields.sku + '/' + 
+            encodeURIComponent(JSON.stringify(this.state.fields)),
+            testingUrl + '/createListingEbay/' + this.state.fields.sku + '/' + 
+            encodeURIComponent(JSON.stringify(this.state.fields)), this.state.fields
+
+
+            );*/
+            let tempFields = { ...this.state.fields, 
+                ['conditionDescription']: this.state.fields.condition !== '0' ? [this.state.fields.conditionDescription] : [],
+                ['pictures']: this.state.pictures.map(item => item),
+                ['status']: 'online',                                           
+            };
+
+            let listingsTemp = this.props.listings.map(item => { if (item.sku === this.props.item.sku) { return tempFields}  return item })
+
+
+                
+                this.props.listingRelistEbay(
+                    this.props.urlBase + '/updatedraftlisting/' + this.state.fields.sku + '/' + 
+                encodeURIComponent(JSON.stringify(this.state.fields)),
+                this.props.urlBase + '/relist/' + this.state.fields.sku + '/' + 
+                encodeURIComponent(JSON.stringify(
+                    
+                    { ...this.state.fields, ['conditionDescription']: this.state.fields.condition !== '0' ? this.state.fields.conditionDescription : [],
+                    ['pictures']: this.state.pictures.map(item => item) }
+                
+                )), 
+                
+                { ...this.state.fields, ['conditionDescription']: this.state.fields.condition !== '0' ? this.state.fields.conditionDescription : [],
+                ['pictures']: this.state.pictures.map(item => item) }
+                
+                , listingsTemp
+
+
+                );
+            
+                
+
+            
+                this.props.handleClose();
+            
+        }
+
 
         handleSaveFormOnline = () => {
 
@@ -282,10 +347,15 @@ class ListingForm extends Component {
                 , listingsTemp);
             
 
-
+                
             
                 this.props.handleClose();
             
+        }
+
+        handleApplyDeleteListing = () => {
+            //this.props.handleDeleteListing();
+            this.props.handleClose();
         }
 
         handleCancelForm = () => {
@@ -353,6 +423,38 @@ class ListingForm extends Component {
                 }
             )*/
             console.log(this.pond);
+        }
+
+        validateFields = () => {
+            if (Number(this.state.fields.quantity) < 1){
+                return false
+            }
+
+            if (!this.state.fields.brand){
+                return false
+            }
+
+            if (this.state.fields.title.length <= 0){
+                return false
+            }
+
+            if (Number(this.state.fields.price) <= 0){
+                return false
+            }
+
+            if (this.state.fields.partNumbers.length === 0){
+                return false
+            }
+
+            if (this.state.fields.location.length === 0){
+                return false
+            }
+
+            if (this.state.pictures.length === 0){
+                return false
+            }
+
+            return true
         }
 
         handleUpdateItem = (fileItems) => {
@@ -525,10 +627,10 @@ class ListingForm extends Component {
 
                 
 
-                <Form.Field>
+                {/*<Form.Field>
                     <label>UPC</label>
                     <Input id="upc" value={this.state.fields.upc} onChange={this.handleChangeField} placeholder="UPC" />
-                </Form.Field>
+                </Form.Field>*/}
 
                 <Form.Field>
                     <label>Quantity</label>
@@ -647,12 +749,45 @@ class ListingForm extends Component {
                 }
 
                 { this.state.fields.status === "offline" ?
-                   <span><Button color="blue" onClick = {this.handleSaveForm} /*type='submit'*/>Save as Draft</Button>
-                    <Button color="green" onClick = {this.handleSaveFormUpload} /*type='submit'*/>Upload</Button></span> : <span></span>
-                }    
-                { this.state.fields.status === "online" ?
-                    <Button color="green" onClick = {this.handleSaveFormOnline} /*type='submit'*/>Apply Changes</Button> : <span></span>
+                   <Button color="blue" onClick = {this.handleSaveForm} >Save as Draft</Button> : <span></span>
                 }
+
+                { (this.state.fields.status === "offline" && this.validateFields() && !this.props.item.itemId) ? 
+                        <Button color="green" onClick = {this.handleSaveFormUpload} >Upload</Button> : <span></span>
+                }
+
+                { (this.state.fields.status === "offline" && this.validateFields() && this.props.item.itemId) ? 
+                        <Button color="green" onClick = {this.handleSaveFormRelist} >Relist</Button> : <span></span>
+                }
+
+                { (this.state.fields.status === "online" && this.validateFields()) ?
+                    <Button color="green" onClick = {this.handleSaveFormOnline} >Apply Changes</Button> : <span></span>
+                }
+
+                <Modal 
+                        trigger={<Button color ="red" onClick = {this.props.handleDeleteOpen}>Delete</Button>}
+                        open={this.props.modalDeleteOpen}
+                        onClose={this.props.handleDeleteClose}
+                        closeOnEscape={false}
+                        closeOnDimmerClick={false}
+                      >
+                      <Header icon='trash' content='Delete Listing' />
+                      <Modal.Content>
+                          <h3>Are you sure you want to delete "{this.props.item.title}"</h3>
+                      </Modal.Content>
+
+                      <Modal.Actions>
+                        <Button onClick = {this.props.handleDeleteClose} color='red'>
+                            <Icon name='remove' /> No
+                        </Button>
+                        <Button onClick = {this.handleDeleteClose} color='green'>
+                            <Icon name='checkmark' /> Yes
+                        </Button>
+                      </Modal.Actions>
+
+                </Modal>
+
+
                 
                 <Button color="black" onClick = {this.handleCancelForm} /*type='cancel'*/>Cancel</Button>
             </Form>
@@ -683,6 +818,8 @@ const mapStateToProps = (state) => {
         listingDraftUpdateDatabase: (url, listingDraft, listings) => dispatch(listingDraftUpdateDatabase(url, listingDraft, listings)),
         listingUpdateDatabase: (url, listingDraft, listings) => dispatch(listingUpdateDatabase(url, listingDraft, listings)),
         listingCreateEbay: (urlUpdate, urlCreate, listingDraft, listings) => dispatch(listingCreateEbay(urlUpdate, urlCreate, listingDraft, listings)),
+        listingRelistEbay: (urlUpdate, urlRelist, listingDraft, listings) => dispatch(listingRelistEbay(urlUpdate, urlRelist, listingDraft, listings)),
+        
         //addNewLocation: (newLocation) => dispatch(addNewLocation(newLocation)),
         
     };

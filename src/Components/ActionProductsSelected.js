@@ -4,14 +4,14 @@ import React, {Component} from 'react'
 //import '../helpers.js'
 import { connect } from 'react-redux';
 import {Button, Dropdown} from 'semantic-ui-react';
-import { changeProductsSelected, changePicturesIsLoading, fixPicturesListing  } from '../modules/actions';
+import { changeProductsSelected, changePicturesIsLoading, fixPicturesListing, publishAmazonBulk  } from '../modules/actions';
 
 
 
 class ActionProductsSelected extends Component {
   
     state = {
-      bulkOption: 'online',
+      bulkOption: 'pictures',
     }
   
     handleChange = (e,data) => {
@@ -24,7 +24,9 @@ class ActionProductsSelected extends Component {
       
   
       if (this.state.bulkOption === 'amazon'){
-        console.log("EJECUTAR AMAZON!");        
+        console.log("EJECUTAR AMAZON!");
+        
+        this.props.publishAmazonBulk(this.props.productsSelected, this.props.listings, this.props.brands);
         
         //window.client.processAsinListBulk(this.props.productsSelected, this.props.rawList, this.props.brandsList);
       }
@@ -37,7 +39,7 @@ class ActionProductsSelected extends Component {
         //window.client.processAsinListBulk(this.props.productsSelected, this.props.rawList, this.props.brandsList);
       }
   
-      this.setState({bulkOption: 'online'});
+      this.setState({bulkOption: 'pictures'});
       
       this.props.changeProductsSelected([]);
 
@@ -50,10 +52,11 @@ class ActionProductsSelected extends Component {
   
     render(){
       const options = [
-        { key: 'online', icon: 'globe', text: 'Switch to Online', value: 'online' },
-        { key: 'offline', icon: 'level down', text: 'Bring to Offline', value: 'offline' },
-        { key: 'amazon', icon: 'amazon', text: 'Publish in Amazon', value: 'amazon' },
+        //{ key: 'online', icon: 'globe', text: 'Switch to Online', value: 'online' },
+        //{ key: 'offline', icon: 'level down', text: 'Bring to Offline', value: 'offline' },
+        
         { key: 'pictures', icon: 'picture', text: 'Fix Pictures', value: 'pictures' },
+        { key: 'amazon', icon: 'amazon', text: 'Publish in Amazon', value: 'amazon' },
         //{ key: 'delete', icon: 'delete', text: 'Delete', value: 'delete' },
       ]
       return (
@@ -88,6 +91,7 @@ class ActionProductsSelected extends Component {
         searchIsChecked: state.searchIsChecked,
         productsSelected: state.productsSelected,
         picturesIsLoading: state.picturesIsLoading,
+        brands: state.brands,
         
         
         //listingsFiltered: state.listingsFiltered,
@@ -110,7 +114,7 @@ class ActionProductsSelected extends Component {
         changeProductsSelected: (list) => dispatch(changeProductsSelected(list)),
         changePicturesIsLoading: (list) => dispatch(changePicturesIsLoading(list)),
         fixPicturesListing: (list, allListings) => dispatch(fixPicturesListing(list, allListings)),
-        
+        publishAmazonBulk: (list, allListings, brandList) => dispatch(publishAmazonBulk(list, allListings, brandList)),
         
         
         //fetchListings: (url) => dispatch(listingsFetchData(url)),

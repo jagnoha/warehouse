@@ -107,6 +107,8 @@ export function listingsUpdate(listings){
     };
 }
 
+
+
 export function listingsFetchDataSuccess(listings, clickedColumn, order) {
     return {
         type: 'LISTINGS_FETCH_DATA_SUCCESS',
@@ -451,6 +453,234 @@ export function changePicturesIsLoading(list){
     };
 }
 
+function requestAmazonListingUPC(sku){
+    let config = {
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+        }
+    }
+    axios.get(urlbase + '/addrequestamazonlistingupc/c7104e07-ed84-4a6c-b57b-1f333b197401/'+sku, config)
+    .then(response => {
+        console.log(response);
+    })
+    .catch(error => console.log("error"));       
+    
+}
+
+function requestAmazonListing(asin, sku){
+    let config = {
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+        }
+    }
+    axios.get(urlbase + '/addrequestamazonlisting/c7104e07-ed84-4a6c-b57b-1f333b197401/'+asin+'/'+sku, config)
+    .then(response => {
+        console.log(response);
+    })
+    .catch(error => console.log("error"));       
+    
+}
+
+export function getAmazonAsinListAutoparts(sku, partNumbers, brand, brandList, allListings) {
+    let config = {
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+        }
+    }
+
+    let listingBrand = brandList.filter((item) => item.id === brand)[0].value;
+    let listingPartNumber = partNumbers;
+
+    let query = listingBrand + ' ' + listingPartNumber;
+    
+    axios.get(urlbase + '/getamazonasinlistbyquery/c7104e07-ed84-4a6c-b57b-1f333b197401/'+query, config)
+    .then(response => {
+        
+        //console.log(response.data);
+        console.log("Brand: " + brand + " | PartNumber: " + partNumbers);
+        console.log(query);
+
+        if (response.data){
+
+        //let listingBrand = brandList.filter((item) => item.id === brand)[0].value;
+      
+        let listFiltered = response.data.filter(item => {
+            return item.AttributeSets.ItemAttributes.Brand.toUpperCase().includes(listingBrand.toUpperCase()) &&
+            //item.AttributeSets.ItemAttributes.Brand.toUpperCase() === listingBrand.toUpperCase() &&
+            item.AttributeSets.ItemAttributes.PartNumber.toUpperCase() === listingPartNumber.toUpperCase()
+        })
+
+        if (listFiltered.length > 0){
+            console.log('>>>>>>>> ASIN: ' + listFiltered[0].Identifiers.MarketplaceASIN.ASIN);
+            console.log('>>>>>>>> SKU:' + sku);
+            console.log('>>>>>>>> Listing Brand: ' + listingBrand);
+            console.log('>>>>>>>> Amazon Brand: '+ listFiltered[0].AttributeSets.ItemAttributes.Brand);
+            
+            let tempListing = allListings.filter(item => item.sku === sku);
+            let tempAllListings = allListings.filter(item => item.sku !== sku);
+
+            tempListing[0]['asin'] = 'pending';
+            
+            let newAllListings = tempAllListings.concat(tempListing);
+
+            listingsUpdate(newAllListings);
+            requestAmazonListing(listFiltered[0].Identifiers.MarketplaceASIN.ASIN, sku);
+        } else {
+
+            let tempListing = allListings.filter(item => item.sku === sku);
+            let tempAllListings = allListings.filter(item => item.sku !== sku);
+
+            tempListing[0]['asin'] = 'pending';
+            
+            let newAllListings = tempAllListings.concat(tempListing);
+
+            listingsUpdate(newAllListings);
+            requestAmazonListingUPC(sku);
+
+          }
+        }
+    
+    
+    })
+    .catch(error => {
+        console.log(error);
+        let tempListing = allListings.filter(item => item.sku === sku);
+        let tempAllListings = allListings.filter(item => item.sku !== sku);
+
+        tempListing[0]['asin'] = '';
+            
+        let newAllListings = tempAllListings.concat(tempListing);
+
+        listingsUpdate(newAllListings);
+        //requestAmazonListingUPC(sku);
+    });
+}
+
+export function publishAmazonBulk(list, allListings, brandList) {
+    
+    return (dispatch) => {
+
+    let loadingList = list;
+    //let errorList = [];
+
+    /*let config = {
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+        }
+    }*/
+
+    for (const item of loadingList){
+            
+        let listingInfo = allListings.filter(listing => {
+            return listing.uuid === item
+        })
+
+        console.log(item);
+        
+        if (!listingInfo[0].asin &&
+            listingInfo[0].condition === '0' && listingInfo[0].status === 'online' && !listingInfo[0].title.toUpperCase().includes('LOT OF') && 
+            !listingInfo[0].title.toUpperCase().includes('*')
+        ){
+             /*setTimeout(await getAmazonAsinListAutoparts(
+            listingInfo[0].sku, listingInfo[0].partNumbers[0], listingInfo[0].brand, brandList)
+            ,3000)*/
+
+            //setTimeout(await dispatch(getAmazonAsinListAutoparts(listingInfo[0].sku, listingInfo[0].partNumbers[0], listingInfo[0].brand, brandList )), 3000)
+        
+            //dispatch(getAmazonAsinListAutoparts(listingInfo[0].sku, listingInfo[0].partNumbers[0], listingInfo[0].brand, brandList ))
+            
+            
+            getAmazonAsinListAutoparts(listingInfo[0].sku, listingInfo[0].partNumbers[0], listingInfo[0].brand, brandList, allListings )
+        }
+    
+    }
+    /*for (const item of loadingList){
+
+        let sku = window.helpers.getListingFromId(allListings, item).sku;
+        console.log(sku);
+        
+        let url = urlbase+"/fixpictures/" + sku; 
+        
+        axios.get(url, config)
+        .then(response => {
+            
+            for (const itemList of allListings){
+                if (itemList.uuid === item){
+                    itemList.pictures = 'PENDING';
+                    break;
+                }
+            }
+            console.log(response);
+
+            let tempLoadingList = loadingList.filter(itemLoading => itemLoading !== item);
+            loadingList = tempLoadingList.map(item => item);
+
+            
+            
+            dispatch(changePicturesIsLoading(loadingList));
+                  
+        
+        })
+    }*/
+
+    
+
+
+  }
+
+}
+
+/*function getPicturesInformation(results, sku, allListings){
+    //console.log(results);
+    const listing = results.Item;
+    //const itemId = listing.ItemID;
+  
+    const picturesTemp = listing.PictureDetails.PictureURL;
+    console.log(picturesTemp);
+  
+    let otherPictures = [];
+  
+    if (typeof picturesTemp === 'object'){
+      
+          otherPictures = picturesTemp.map((item) => {
+              return {ebayUrl: item.replace('$_1', '$_10'), id: uuidv4()}
+    })
+    } else {
+          try {
+              otherPictures = [{ebayUrl: picturesTemp.replace('$_1', '$_10'), id: uuidv4()}];
+          } catch(error){
+              otherPictures = [];
+          }
+    }
+  
+  
+    const pictures = otherPictures;
+  
+    let tempListing = allListings.filter(item => item.sku === sku);
+    let tempAllListings = allListings.filter(item => item.sku !== sku);
+
+    tempListing[0]['pictures'] = pictures;
+            
+    let newAllListings = tempAllListings.concat(tempListing);
+
+    listingsUpdate(newAllListings);
+
+    /*pictures.forEach( (item) => {
+      let fileName = item.id;
+      downloadPicture(item.ebayUrl, './pictures', fileName);
+      }
+    );*/
+  
+    /*Listing.updateOne({"sku": sku}, 
+    {
+        "pictures": pictures.map(item => item.id),
+    }, function(err, raw){
+      if (err) throw Error("Network Error!");
+      console.log(raw);
+    });
+  
+}*/
+
 export function fixPicturesListing(list, allListings) {
     
     return (dispatch) => {
@@ -476,7 +706,11 @@ export function fixPicturesListing(list, allListings) {
             
             for (const itemList of allListings){
                 if (itemList.uuid === item){
+                    
                     itemList.pictures = 'PENDING';
+                    
+                    //getPicturesInformation(response, itemList.sku, allListings);
+                    
                     break;
                 }
             }
@@ -487,42 +721,13 @@ export function fixPicturesListing(list, allListings) {
 
             
             
-            dispatch(changePicturesIsLoading(loadingList));        
+            dispatch(changePicturesIsLoading(loadingList));
+                  
         
         })
     }
 
     }
-
-
-    
-
-
-    
-    /*return (dispatch) => {
-        dispatch(ebayMarketplacesIsLoading(true));
-
-        let config = {
-            headers: {
-                'Access-Control-Allow-Origin': '*',
-            }
-        }
-        axios.get(url, config)
-        .then(response => {
-            
-            if (response.statusText !== "OK"){
-                throw Error(response.statusText);
-            }
-
-            dispatch(ebayMarketplacesIsLoading(false));
-            
-            return response.data
-
-        })
-        .then((brands) => dispatch(ebayMarketplacesFetchDataSuccess(brands)))
-        .catch(() => dispatch(ebayMarketplacesHasErrored(true)));
-    }*/
-
 
 }
 
@@ -657,6 +862,31 @@ export function listingDraftUpdateDatabase(url, listingDraft, listings) {
 
 }
 
+export function listingDeleteDatabase(url, listings) {
+    return (dispatch) => {
+    dispatch(listingDraftIsLoading(true))    
+    fetch(url,{
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            //'Accept': 'application/json',
+            //'Content-Type': 'application/json',
+        }
+    })
+    .then((response) => {
+
+        dispatch(listingDraftIsLoading(false));
+
+        dispatch(listingsUpdate(listings));
+        
+        return response
+    
+    }).catch((error) => {
+      console.error(error);
+    });
+  }
+
+}
+
 export function listingUpdateDatabase(url, listingDraft, listings) {
     return (dispatch) => {
     dispatch(listingDraftIsLoading(true))    
@@ -696,7 +926,32 @@ export function listingCreateEbay(urlUpdate, urlCreate, listingDraft, listings) 
 
         dispatch(listingDraftIsLoading(false));
         dispatch(listingsUpdate(listings));
-        dispatch(listingDraftUpdated(listingDraft));
+        //dispatch(listingDraftUpdated(listingDraft));
+
+        return response
+    
+    }).catch((error) => {
+      console.error(error);
+    });
+  }
+
+}
+
+export function listingRelistEbay(urlUpdate, urlRelist, listingDraft, listings) {
+    return (dispatch) => {
+    dispatch(listingUpdateDatabase(urlUpdate, listingDraft))    
+    fetch(urlRelist,{
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            //'Accept': 'application/json',
+            //'Content-Type': 'application/json',
+        }
+    })
+    .then((response) => {
+
+        dispatch(listingDraftIsLoading(false));
+        dispatch(listingsUpdate(listings));
+        //dispatch(listingDraftUpdated(listingDraft));
 
         return response
     

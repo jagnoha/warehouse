@@ -90,7 +90,7 @@ window.helpers = (function () {
       
     const outOfStock = (qty) => {
         if (qty < 1){  
-          return <Label size='tiny' color='yellow'>Out of Stock</Label>
+          return <Label size='tiny' color='red'>Out of Stock</Label>
         }
     }
 
@@ -121,6 +121,8 @@ window.helpers = (function () {
         {text: 'Used', value: '2'},
         {text: 'Manufacturer refurbished', value: '3'},
         {text: 'For parts or not working', value: '4'},
+        {text: 'Remanufactured', value: '5'},
+        
     ]
 
     const conditionDescriptionOptions = [

@@ -389,6 +389,7 @@ import { userActive, userActiveHasErrored, userActiveIsLoading } from './reducer
 
 
 
+
 export default combineReducers({
     locations,
     locationsHasErrored,
@@ -428,5 +429,6 @@ export default combineReducers({
     userActive,
     userActiveHasErrored,    
     userActiveIsLoading,
+    
     
 });
