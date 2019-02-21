@@ -37,7 +37,7 @@ import axios from 'axios';
 import _ from 'lodash';
 import '../helpers.js';
 
-const urlbase = 'https://723ad24b.ngrok.io';
+const urlbase = 'https://29508158.ngrok.io';
 
 export function locationsHasErrored(bool){
     return {
@@ -578,7 +578,7 @@ export function publishAmazonBulk(list, allListings, brandList) {
         console.log(item);
         
         if (!listingInfo[0].asin &&
-            listingInfo[0].condition === '0' && listingInfo[0].status === 'online' && !listingInfo[0].title.toUpperCase().includes('LOT OF') && 
+            Number(listingInfo[0].condition) < 2 && listingInfo[0].status === 'online' && !listingInfo[0].title.toUpperCase().includes('LOT OF') && 
             !listingInfo[0].title.toUpperCase().includes('*')
         ){
              /*setTimeout(await getAmazonAsinListAutoparts(
@@ -961,6 +961,194 @@ export function listingRelistEbay(urlUpdate, urlRelist, listingDraft, listings) 
   }
 
 }
+
+export function locationsUpdate(locations){
+    return {
+        type: 'LOCATIONS_UPDATE',
+        locations
+    };
+}
+
+export function locationUpdateDatabase(url, locations) {
+    return (dispatch) => {
+    dispatch(locationsIsLoading(true))    
+    fetch(url,{
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            //'Accept': 'application/json',
+            //'Content-Type': 'application/json',
+        }
+    })
+    .then((response) => {
+
+        dispatch(locationsIsLoading(false));
+        dispatch(locationsUpdate(locations));
+        
+        return response
+    
+    }).catch((error) => {
+      console.error(error);
+    });
+  }
+
+}
+
+
+
+/*export function ebayOrdersHasErrored(bool){
+    return {
+        type: 'EBAY_ORDERS_HAS_ERRORED',
+        hasErrored: bool
+    };
+}
+
+export function ebayOrdersIsLoading(bool){
+    return {
+        type: 'EBAY_ORDERS_IS_LOADING',
+        isLoading: bool
+    };
+}*/
+
+export function ebayOrdersFetchDataSuccess(ebayOrders) {
+    return {
+        type: 'EBAY_ORDERS_FETCH_DATA_SUCCESS',
+        ebayOrders
+    };
+}
+
+/*export function ebayOrdersCreateLabels(ebayOrders) {
+    return (dispatch)
+}*/
+
+export function ebayOrdersIsLoading(list){
+    return {
+        type: 'EBAY_ORDERS_IS_LOADING',
+        ebayOrdersIsLoading: list,
+    };
+}
+
+export function fileNameEbayPdf(list){
+    return {
+        type: 'FILE_NAME_EBAY_PDF',
+        fileNameEbayPdf: list,
+    };
+}
+
+/*export function createEbayLabels(ebayAccount, ebayOrders) {
+    return (dispatch) => {
+        let listOld
+    }
+}*/
+
+export function ebayOrdersFetchData(ebayAccount, oldEbayOrders, listLoading) {
+    return (dispatch) => {
+        let listOld = listLoading;
+        let list = listLoading;
+        list = list.concat(ebayAccount);
+
+        //dispatch(ebayOrdersIsLoading(true));
+
+        dispatch(ebayOrdersIsLoading(list))
+
+        let config = {
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+            }
+        }
+        axios.get(urlbase + "/getorders/" + ebayAccount + "/1", config)
+        .then(response => {
+            
+            if (response.statusText !== "OK"){
+                throw Error(response.statusText);
+            }
+
+            //list = listLoading;
+            dispatch(ebayOrdersIsLoading(listOld));
+            
+            return response.data
+
+        })
+        .then((ebayOrders) => 
+           
+            {
+                console.log(ebayOrders.orders);
+
+                let tempEbayOrders = oldEbayOrders.filter(item => item.ebayMarketplace !== ebayAccount);
+
+                let ebayOrdersFinal = tempEbayOrders.concat({ebayMarketplace: ebayAccount, orders: ebayOrders.orders})
+
+                dispatch(ebayOrdersFetchDataSuccess(ebayOrdersFinal))
+
+                //dispatch(ebayOrdersFetchDataSuccess(ebayOrders))
+                 
+                /*axios.get(urlbase + "/ebaymakepdf/" + encodeURIComponent(JSON.stringify(ebayOrders.orders)) + '/' + ebayAccount, config)
+                .then(response => {
+            
+                    if (response.statusText !== "OK"){
+                        throw Error(response.statusText);
+                    }
+
+                        dispatch(ebayOrdersIsLoading(false));
+                        dispatch(ebayOrdersFetchDataSuccess(ebayOrders))
+            
+                    return response.data
+
+                })*/
+
+           }
+        )
+        .catch(() => dispatch(ebayOrdersIsLoading(listLoading)));
+    }
+}
+
+export function createLabelsEbay(ebayAccount, fileNameList, ebayOrders, listLoading, fileName) {
+    return (dispatch) => {
+        let newFileName = fileName;
+        let listOld = listLoading;
+        let list = listLoading;
+        list = list.concat(ebayAccount);
+
+        let oldFileNamelist = fileNameList;
+        let newfileNameList = fileNameList;
+        newfileNameList = newfileNameList.concat({ebayAccount, newFileName}) 
+
+
+        //dispatch(ebayOrdersIsLoading(true));
+
+        dispatch(ebayOrdersIsLoading(list))
+        
+        let config = {
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+            }
+        }
+        axios.get(urlbase + "/ebaymakepdf/" + encodeURIComponent(JSON.stringify(ebayOrders)) + '/' + ebayAccount + '/' + newFileName, config)
+        .then(response => {
+            
+            if (response.statusText !== "OK"){
+                throw Error(response.statusText);
+            }
+
+            //list = listLoading;
+            dispatch(ebayOrdersIsLoading(listOld));
+            dispatch(fileNameEbayPdf(newfileNameList));
+            //return response.data
+
+        })        
+        .catch(() => {
+            dispatch(ebayOrdersIsLoading(listLoading))
+            dispatch(fileNameEbayPdf(oldFileNamelist));
+        } );
+    }
+}
+
+export function ebayOrdersUpdate(ebayOrders){
+    return {
+        type: 'EBAY_ORDERS_UPDATE',
+        ebayOrders
+    };
+}
+
 
 
 

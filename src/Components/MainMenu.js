@@ -46,18 +46,12 @@ class MainMenu extends Component {
             to={'locations'}  
             name='locations' 
             active={activeItem === 'locations'} 
-            onClick={this.handleItemClick} 
-            icon="warehouse"            
+            onClick={this.handleItemClick}
+            icon="box"            
           />
 
-          <Menu.Item
-            as={ Link }
-            to={'brands'}  
-            name='brands' 
-            active={activeItem === 'brands'} 
-            onClick={this.handleItemClick} 
-            icon="tag"
-          />
+
+          
 
           <Menu.Item
             as={ Link }

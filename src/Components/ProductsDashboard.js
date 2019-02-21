@@ -8,6 +8,7 @@ import ProductsFilterByMarketplace from './ProductsFilterByMarketplace'
 import ProductsFilterByUser from './ProductsFilterByUser'
 import ProductsFilterBySearch from './ProductsFilterBySearch'
 import ActionProductsSelected from './ActionProductsSelected'
+import { Segment } from 'semantic-ui-react'
 
 //const ProductsDashboard = ({listings, locationsList, brandsList, usersList, conditionsList, ebayMarketplacesList} ) => (
 
@@ -21,11 +22,17 @@ class ProductsDashboard extends Component {
     return (
     <div>
     <ActionProductsSelected />
+    <Segment>
     <ProductsFilterByCondition />
     <ProductsFilterByStatus /> 
+    </Segment>
+    <Segment>
     <ProductsFilterByMarketplace />
     <ProductsFilterByUser />
+    </Segment>
+    <Segment>
     <ProductsFilterBySearch />     
+    </Segment>
     <ProductsTable 
         /*listings = {this.props.listings}
         productsByPage = {this.props.productsByPage}

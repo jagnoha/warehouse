@@ -384,6 +384,8 @@ import { newBrand } from './reducers/newBrand';
 import { newLocation } from './reducers/newLocation';
 import { listingDraft, listingDraftHasErrored, listingDraftIsLoading } from './reducers/listingDraft';
 import { userActive, userActiveHasErrored, userActiveIsLoading } from './reducers/userActive';
+import { ebayOrders, ebayOrdersHasErrored, ebayOrdersIsLoading, fileNameEbayPdf } from './reducers/ebayOrders';
+import { ebayLabels, ebayLabelsHasErrored, ebayLabelsIsLoading } from './reducers/ebayLabels';
 
 
 
@@ -429,6 +431,13 @@ export default combineReducers({
     userActive,
     userActiveHasErrored,    
     userActiveIsLoading,
+    ebayOrders,
+    ebayOrdersHasErrored,    
+    ebayOrdersIsLoading,
+    fileNameEbayPdf,
+    ebayLabels,
+    ebayLabelsHasErrored,    
+    ebayLabelsIsLoading,
     
     
 });

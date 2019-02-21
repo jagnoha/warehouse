@@ -8,6 +8,7 @@ import { BrowserRouter as Router, Route, Link, Redirect, withRouter, browserHist
 import LoginForm from './Components/LoginForm';
 import MainApp from './Components/MainApp';
 import Listings from './Components/Listings';
+import Orders from './Components/Orders';
 import Locations from './Components/Locations';
 import Brands from './Components/Brands';
 import Reports from './Components/Reports';
@@ -81,6 +82,7 @@ class App extends React.PureComponent {
             <Route exact path="/" component={Listings} />
             <Route path="/locations" component={Locations} />
             <Route path="/brands" component={Brands} />
+            <Route path="/orders" component={Orders} />
             <Route path="/reports" component={Reports} />
             
             

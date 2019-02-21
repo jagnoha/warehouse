@@ -18,6 +18,9 @@ class Listings extends Component {
      
       return (
         <div>
+              <Segment>
+                <h2>Listings Manager</h2>
+              </Segment>
             <ProductsDashboard
                 /*listings = {this.props.listings.slice(0,20)}
                 locationsList = {this.props.locations}

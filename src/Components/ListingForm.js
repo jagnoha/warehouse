@@ -780,7 +780,7 @@ class ListingForm extends Component {
                         <Button onClick = {this.props.handleDeleteClose} color='red'>
                             <Icon name='remove' /> No
                         </Button>
-                        <Button onClick = {this.handleDeleteClose} color='green'>
+                        <Button onClick = {this.props.handleDeleteClose} color='green'>
                             <Icon name='checkmark' /> Yes
                         </Button>
                       </Modal.Actions>
