@@ -23,12 +23,32 @@ class SelectAllItems extends Component {
             }
         }
 
-        function checkStatusFilterActive(list, statusFilterActive){
+        /*function checkStatusFilterActive(list, statusFilterActive){
             if (statusFilterActive !== 'ALL'){
               return list.filter(item => item.status === statusFilterActive)
             } else {
               return list;
             }
+          }*/
+
+          function checkStatusFilterActive(list, statusFilterActive){
+            /*if (statusFilterActive !== 'ALL'){
+              return list.filter(item => item.status === statusFilterActive)
+            } else {
+              return list;
+            }*/
+            if (statusFilterActive === 'online'){
+              return list.filter(item => item.status === "online")
+            } else if (statusFilterActive === 'draft'){
+              return list.filter(item => item.status === "offline" && item.price === "")
+            } else if (statusFilterActive === 'outofstock'){
+              return list.filter(item => item.status === "offline" && item.quantity === 0)
+            } else if (statusFilterActive === 'pendingtoshelf'){
+              return list.filter(item => item.status === "offline" && Number(item.quantity) > 0 && item.price && item.location.length > 0)
+            } else {
+              return list;
+            }
+      
           }
 
           function checkEbayMarketplacesFilterActive(list, ebayMarketplacesFilterActive){
@@ -64,7 +84,7 @@ class SelectAllItems extends Component {
           }
 
 
-
+          
 
       
         if (data.checked === true){ //|| this.props.productsListGrouped.length < 1){

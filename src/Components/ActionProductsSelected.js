@@ -4,7 +4,7 @@ import React, {Component} from 'react'
 //import '../helpers.js'
 import { connect } from 'react-redux';
 import {Button, Dropdown} from 'semantic-ui-react';
-import { changeProductsSelected, changePicturesIsLoading, fixPicturesListing, publishAmazonBulk  } from '../modules/actions';
+import { changeProductsSelected, changePicturesIsLoading, fixPicturesListing, publishAmazonBulk, uploadEbayBulk  } from '../modules/actions';
 
 
 
@@ -27,6 +27,14 @@ class ActionProductsSelected extends Component {
         console.log("EJECUTAR AMAZON!");
         
         this.props.publishAmazonBulk(this.props.productsSelected, this.props.listings, this.props.brands);
+        
+        //window.client.processAsinListBulk(this.props.productsSelected, this.props.rawList, this.props.brandsList);
+      }
+
+      if (this.state.bulkOption === 'upload'){
+        console.log("UPLOAD LISTINGS!");
+        
+        this.props.uploadEbayBulk(this.props.productsSelected, this.props.listings, this.props.locations);
         
         //window.client.processAsinListBulk(this.props.productsSelected, this.props.rawList, this.props.brandsList);
       }
@@ -57,6 +65,7 @@ class ActionProductsSelected extends Component {
         
         { key: 'pictures', icon: 'picture', text: 'Fix Pictures', value: 'pictures' },
         { key: 'amazon', icon: 'amazon', text: 'Publish in Amazon', value: 'amazon' },
+        { key: 'upload', icon: 'amazon', text: 'Upload in Ebay', value: 'upload' },
         //{ key: 'delete', icon: 'delete', text: 'Delete', value: 'delete' },
       ]
       return (
@@ -92,6 +101,7 @@ class ActionProductsSelected extends Component {
         productsSelected: state.productsSelected,
         picturesIsLoading: state.picturesIsLoading,
         brands: state.brands,
+        locations: state.locations,
         
         
         //listingsFiltered: state.listingsFiltered,
@@ -115,6 +125,7 @@ class ActionProductsSelected extends Component {
         changePicturesIsLoading: (list) => dispatch(changePicturesIsLoading(list)),
         fixPicturesListing: (list, allListings) => dispatch(fixPicturesListing(list, allListings)),
         publishAmazonBulk: (list, allListings, brandList) => dispatch(publishAmazonBulk(list, allListings, brandList)),
+        uploadEbayBulk: (list, allListings, locations) => dispatch(uploadEbayBulk(list, allListings, locations)),
         
         
         //fetchListings: (url) => dispatch(listingsFetchData(url)),

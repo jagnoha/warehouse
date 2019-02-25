@@ -630,6 +630,61 @@ export function publishAmazonBulk(list, allListings, brandList) {
 
 }
 
+export function uploadEbayBulk(list, allListings, locations) {
+    
+    return (dispatch) => {
+
+    let loadingList = list;
+
+    let tempListings = allListings;
+
+    let config = {
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+        }
+    }
+    
+
+    for (const item of loadingList){
+    //loadingList.forEach(item => {
+        
+
+        console.log(item);
+
+        let itemInfo = tempListings.filter(itemList => itemList.sku === item)[0];
+        
+        itemInfo = {...itemInfo, ['locationValues']: itemInfo.location.map(itemLocation => window.helpers.getLocationFromId(locations, itemLocation))}
+
+
+        /*listingCreateEbay(urlbase + '/updatedraftlisting/' + itemInfo.sku + '/' + 
+        encodeURIComponent(JSON.stringify(itemInfo)), 
+        
+        urlbase + '/createlistingebay/' + itemInfo.sku + '/' + 
+        encodeURIComponent(JSON.stringify(itemInfo)), itemInfo, tempListings);*/
+
+        /*simpleListingCreateEbay(urlbase + '/createlistingebay/' + itemInfo.sku + '/' + 
+        encodeURIComponent(JSON.stringify(itemInfo)), tempListings);*/
+
+
+
+        axios.get(urlbase + '/createlistingebay/' + itemInfo.sku + '/' + 
+        encodeURIComponent(JSON.stringify(itemInfo)), config)
+        .then(response => {
+                        
+            console.log(response);
+
+                             
+        
+        })
+
+        
+    }
+
+  }
+
+}
+
+
 /*function getPicturesInformation(results, sku, allListings){
     //console.log(results);
     const listing = results.Item;
@@ -902,6 +957,30 @@ export function listingUpdateDatabase(url, listingDraft, listings) {
         dispatch(listingDraftIsLoading(false));
         dispatch(listingsUpdate(listings));
         dispatch(listingDraftUpdated(listingDraft));
+
+        return response
+    
+    }).catch((error) => {
+      console.error(error);
+    });
+  }
+
+}
+
+export function simpleListingCreateEbay(urlCreate, listings) {
+    return (dispatch) => {
+    //dispatch(listingUpdateDatabase(urlUpdate, listingDraft))    
+    fetch(urlCreate,{
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            //'Accept': 'application/json',
+            //'Content-Type': 'application/json',
+        }
+    })
+    .then((response) => {
+
+        dispatch(listingsUpdate(listings));
+        //dispatch(listingDraftUpdated(listingDraft));
 
         return response
     
