@@ -65,7 +65,7 @@ class ActionProductsSelected extends Component {
         
         { key: 'pictures', icon: 'picture', text: 'Fix Pictures', value: 'pictures' },
         { key: 'amazon', icon: 'amazon', text: 'Publish in Amazon', value: 'amazon' },
-        { key: 'upload', icon: 'amazon', text: 'Upload in Ebay', value: 'upload' },
+        { key: 'upload', icon: 'upload', text: 'Upload in Ebay', value: 'upload' },
         //{ key: 'delete', icon: 'delete', text: 'Delete', value: 'delete' },
       ]
       return (

@@ -33,8 +33,10 @@ class ProductsTableList extends Component {
               return list.filter(item => item.status === 'offline' && item.quantity === 0)
             } else if (statusFilterActive === 'draft'){
               return list.filter(item => item.status === 'offline' && Number(item.quantity) > 0)
-            } else if (statusFilterActive === 'pendingtoshelf'){
+            } else if (statusFilterActive === 'readytoupload'){
               return list.filter(item => item.status === 'offline' && Number(item.quantity) > 0 && item.price && item.location.length > 0 )
+            } else if (statusFilterActive === 'goodtorevise'){
+              return list.filter(item => item.status === 'offline' && Number(item.quantity) > 0 && !item.price && item.location.length > 0 )
             } else if (statusFilterActive === 'error'){
               return list.filter(item => item.status === 'error')
             } else {

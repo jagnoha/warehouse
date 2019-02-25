@@ -643,7 +643,16 @@ export function uploadEbayBulk(list, allListings, locations) {
             'Access-Control-Allow-Origin': '*',
         }
     }
-    
+
+    let subListings = tempListings.filter(item => !loadingList.includes(item.sku));
+    let subList = tempListings.filter(item => loadingList.includes(item.sku));
+    let changeSubList = subList.map(item => {
+        return {...item, status: 'online'}
+    })
+
+    let totalListings = subListings.concat(changeSubList);
+
+    dispatch(listingsUpdate(totalListings));
 
     for (const item of loadingList){
     //loadingList.forEach(item => {
@@ -652,6 +661,8 @@ export function uploadEbayBulk(list, allListings, locations) {
         console.log(item);
 
         let itemInfo = tempListings.filter(itemList => itemList.sku === item)[0];
+        
+        try {
         
         itemInfo = {...itemInfo, ['locationValues']: itemInfo.location.map(itemLocation => window.helpers.getLocationFromId(locations, itemLocation))}
 
@@ -673,9 +684,29 @@ export function uploadEbayBulk(list, allListings, locations) {
                         
             console.log(response);
 
+            /*let myTempListings = tempListings.filter(itemList => itemList.sku !== item);
+            let tempListing = tempListings.filter(itemList => itemList.sku === item);
+            tempListing['status'] = 'online';
+
+
+            myTempListings = [...myTempListings, tempListing];*/
+
+            //dispatch(listingsUpdate(subListings));
+
+            /*let tempLoadingList = loadingList.filter(itemLoading => itemLoading !== item);
+            
+            loadingList = tempLoadingList.map(item => item);
+            
+            dispatch(changePicturesIsLoading(loadingList));
+            */
                              
         
         })
+
+    } catch(error){
+        console.log(error);
+    }
+
 
         
     }

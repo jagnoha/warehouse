@@ -43,8 +43,10 @@ class ProductsDashboardPagination extends Component {
         return list.filter(item => item.status === "offline" && item.price === "")
       } else if (statusFilterActive === 'outofstock'){
         return list.filter(item => item.status === "offline" && item.quantity === 0)
-      } else if (statusFilterActive === 'pendingtoshelf'){
+      } else if (statusFilterActive === 'readytoupload'){
         return list.filter(item => item.status === "offline" && Number(item.quantity) > 0 && item.price && item.location.length > 0)
+      } else if (statusFilterActive === 'goodtorevise'){
+        return list.filter(item => item.status === 'offline' && Number(item.quantity) > 0 && !item.price && item.location.length > 0 )
       } else {
         return list;
       }
