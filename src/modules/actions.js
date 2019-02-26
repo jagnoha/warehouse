@@ -677,31 +677,25 @@ export function uploadEbayBulk(list, allListings, locations) {
         encodeURIComponent(JSON.stringify(itemInfo)), tempListings);*/
 
 
-
+        if (!itemInfo.itemId) {
+        
         axios.get(urlbase + '/createlistingebay/' + itemInfo.sku + '/' + 
         encodeURIComponent(JSON.stringify(itemInfo)), config)
         .then(response => {
                         
             console.log(response);
-
-            /*let myTempListings = tempListings.filter(itemList => itemList.sku !== item);
-            let tempListing = tempListings.filter(itemList => itemList.sku === item);
-            tempListing['status'] = 'online';
-
-
-            myTempListings = [...myTempListings, tempListing];*/
-
-            //dispatch(listingsUpdate(subListings));
-
-            /*let tempLoadingList = loadingList.filter(itemLoading => itemLoading !== item);
-            
-            loadingList = tempLoadingList.map(item => item);
-            
-            dispatch(changePicturesIsLoading(loadingList));
-            */
-                             
         
         })
+
+        } else {
+            axios.get(urlbase + '/relist/' + itemInfo.sku + '/' + 
+            encodeURIComponent(JSON.stringify(itemInfo)), config)
+            .then(response => {
+                        
+            console.log(response);
+        
+            })
+        }
 
     } catch(error){
         console.log(error);
