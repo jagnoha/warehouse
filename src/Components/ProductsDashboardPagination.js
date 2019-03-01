@@ -38,18 +38,23 @@ class ProductsDashboardPagination extends Component {
         return list;
       }*/
       if (statusFilterActive === 'online'){
-        return list.filter(item => item.status === "online")
-      } else if (statusFilterActive === 'draft'){
-        return list.filter(item => item.status === "offline" && item.price === "")
+        return list.filter(item => item.status === 'online')
       } else if (statusFilterActive === 'outofstock'){
-        return list.filter(item => item.status === "offline" && item.quantity === 0)
+        return list.filter(item => item.status === 'offline' && item.quantity === 0)
+      } else if (statusFilterActive === 'draft'){
+        return list.filter(item => item.status === 'offline' && Number(item.quantity) > 0)
       } else if (statusFilterActive === 'readytoupload'){
-        return list.filter(item => item.status === "offline" && Number(item.quantity) > 0 && item.price && item.location.length > 0)
+        return list.filter(item => item.status === 'offline' && Number(item.quantity) > 0 && item.price && item.location.length > 0 )
       } else if (statusFilterActive === 'goodtorevise'){
         return list.filter(item => item.status === 'offline' && Number(item.quantity) > 0 && !item.price && item.location.length > 0 )
+      } else if (statusFilterActive === 'toshelf'){
+        return list.filter(item => item.status === 'offline' && Number(item.quantity) > 0 && item.location.length === 0 )            }
+      else if (statusFilterActive === 'error'){
+        return list.filter(item => item.status === 'error')
       } else {
         return list;
       }
+    
 
     }
 
