@@ -79,9 +79,33 @@ class ProductsTableList extends Component {
                 return list;
             }
             
-            if (searchIsChecked === true && list.length > 0){
+            /*if (searchIsChecked === true && list.length > 0){
               return list.filter(item => item.title.toLowerCase().includes(valueSearch.toLowerCase()) || 
               item.partNumbers[0].toLowerCase().includes(valueSearch.toLowerCase()) ||
+              item.sku.toLowerCase().includes(valueSearch.toLowerCase()))
+            } else {
+              return list;
+            }*/
+
+            /*if (searchIsChecked === true && list.length > 0){
+              return list.map(item => { return (
+                { 
+                  sku: item.sku, title: item.title, partNumbers: item.partNumbers, 
+                }
+              )}   ).          filter(item => JSON.stringify(item).toLowerCase().includes(valueSearch.toLowerCase()))
+            } else {
+              return list;
+            }*/
+
+            /*if (searchIsChecked === true && list.length > 0){
+              return list.filter(item => JSON.stringify(item).toLowerCase().includes(valueSearch.toLowerCase()))
+            } else {
+              return list;
+            } */ 
+            
+            if (searchIsChecked === true && list.length > 0){
+              return list.filter(item => item.title.toLowerCase().includes(valueSearch.toLowerCase()) || 
+              JSON.stringify(item.partNumbers).toLowerCase().includes(valueSearch.toLowerCase()) ||
               item.sku.toLowerCase().includes(valueSearch.toLowerCase()))
             } else {
               return list;
