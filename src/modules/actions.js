@@ -36,6 +36,7 @@
 import axios from 'axios';
 import _ from 'lodash';
 import '../helpers.js';
+const uuidv4 = require('uuid/v4');
 
 const urlbase = 'https://29508158.ngrok.io';
 
@@ -1144,7 +1145,10 @@ export function fileNameEbayPdf(list){
     }
 }*/
 
-export function ebayOrdersFetchData(ebayAccount, oldEbayOrders, listLoading) {
+
+
+
+export function ebayOrdersFetchData(ebayAccount, oldEbayOrders, listLoading, ebayPdfFilesOld) {
     return (dispatch) => {
         let listOld = listLoading;
         let list = listLoading;
@@ -1166,7 +1170,6 @@ export function ebayOrdersFetchData(ebayAccount, oldEbayOrders, listLoading) {
                 throw Error(response.statusText);
             }
 
-            //list = listLoading;
             dispatch(ebayOrdersIsLoading(listOld));
             
             return response.data
@@ -1181,23 +1184,29 @@ export function ebayOrdersFetchData(ebayAccount, oldEbayOrders, listLoading) {
 
                 let ebayOrdersFinal = tempEbayOrders.concat({ebayMarketplace: ebayAccount, orders: ebayOrders.orders})
 
-                dispatch(ebayOrdersFetchDataSuccess(ebayOrdersFinal))
+                //dispatch(ebayOrdersFetchDataSuccess(ebayOrdersFinal))
 
                 //dispatch(ebayOrdersFetchDataSuccess(ebayOrders))
-                 
-                /*axios.get(urlbase + "/ebaymakepdf/" + encodeURIComponent(JSON.stringify(ebayOrders.orders)) + '/' + ebayAccount, config)
+                
+                let fileName = uuidv4();
+                
+                axios.get(urlbase + "/ebaymakepdf/" + encodeURIComponent(JSON.stringify(ebayOrders.orders)) + '/' + ebayAccount
+                + '/' + fileName, config)
                 .then(response => {
             
                     if (response.statusText !== "OK"){
                         throw Error(response.statusText);
                     }
-
-                        dispatch(ebayOrdersIsLoading(false));
-                        dispatch(ebayOrdersFetchDataSuccess(ebayOrders))
-            
+                        dispatch(ebayOrdersIsLoading(listOld));
+                        dispatch(ebayOrdersFetchDataSuccess(ebayOrdersFinal));
+                        
+                        let tempEbayPDF = ebayPdfFilesOld.filter(item => item.ebayMarketplace !== ebayAccount);
+                        let tempEbayPDFFinal = tempEbayPDF.concat({ebayMarketplace: ebayAccount, file: fileName + '.pdf'});
+                        dispatch(fileNameEbayPdf(tempEbayPDFFinal));
+                    
                     return response.data
 
-                })*/
+                })
 
            }
         )
