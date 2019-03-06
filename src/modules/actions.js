@@ -1184,16 +1184,103 @@ export function ebayOrdersFetchData(ebayAccount, oldEbayOrders, listLoading, eba
 
                 let ebayOrdersFinal = tempEbayOrders.concat({ebayMarketplace: ebayAccount, orders: ebayOrders.orders})
 
+                
+                
                 //dispatch(ebayOrdersFetchDataSuccess(ebayOrdersFinal))
 
-                //dispatch(ebayOrdersFetchDataSuccess(ebayOrders))
+                
+                
                 
                 let fileName = uuidv4();
+                /*let config = {
+                        headers: {
+                        'Access-Control-Allow-Origin': '*',
+                }
+                } */      
                 
-                axios.get(urlbase + "/ebaymakepdf/" + encodeURIComponent(JSON.stringify(ebayOrders.orders)) + '/' + ebayAccount
-                + '/' + fileName, config)
+                
+                
+                  /*axios.get(urlbase + '/ebaymakepdf', {
+                    headers: {
+                        'Access-Control-Allow-Origin': '*',
+                    },
+                    params: {                    
+                        list: ebayOrders.orders,
+                        ebayaccount: ebayAccount,
+                        filename: fileName,
+                    },
+                  })
+                  .then(response => {
+                    console.log(response);
+                    if (response.statusText !== "OK"){
+                        throw Error(response.statusText);
+                    }
+                        dispatch(ebayOrdersIsLoading(listOld));
+                        dispatch(ebayOrdersFetchDataSuccess(ebayOrdersFinal));
+                        
+                        let tempEbayPDF = ebayPdfFilesOld.filter(item => item.ebayMarketplace !== ebayAccount);
+                        let tempEbayPDFFinal = tempEbayPDF.concat({ebayMarketplace: ebayAccount, file: fileName + '.pdf'});
+                        dispatch(fileNameEbayPdf(tempEbayPDFFinal));
+                    
+                    return response.data
+
+                    })*/
+
+
+                 /* axios.post(urlbase + "/ebaymakepdf", config)
                 .then(response => {
-            
+                    console.log(response);
+                    if (response.statusText !== "OK"){
+                        throw Error(response.statusText);
+                    }
+                        dispatch(ebayOrdersIsLoading(listOld));
+                        dispatch(ebayOrdersFetchDataSuccess(ebayOrdersFinal));
+                        
+                        let tempEbayPDF = ebayPdfFilesOld.filter(item => item.ebayMarketplace !== ebayAccount);
+                        let tempEbayPDFFinal = tempEbayPDF.concat({ebayMarketplace: ebayAccount, file: fileName + '.pdf'});
+                        dispatch(fileNameEbayPdf(tempEbayPDFFinal));
+                    
+                    return response.data
+
+                })*/
+
+                /*fetch(urlbase + "/ebaymakepdf/" + encodeURIComponent(JSON.stringify(ebayOrders.orders)) + '/' + ebayAccount
+                + '/' + fileName, {
+                    headers: {
+                        'Access-Control-Allow-Origin': '*',
+                    }
+                })
+                .then(response => {
+                    console.log(response);
+                    if (response.statusText !== "OK"){
+                        throw Error(response.statusText);
+                    }
+                        dispatch(ebayOrdersIsLoading(listOld));
+                        dispatch(ebayOrdersFetchDataSuccess(ebayOrdersFinal));
+                        
+                        let tempEbayPDF = ebayPdfFilesOld.filter(item => item.ebayMarketplace !== ebayAccount);
+                        let tempEbayPDFFinal = tempEbayPDF.concat({ebayMarketplace: ebayAccount, file: fileName + '.pdf'});
+                        dispatch(fileNameEbayPdf(tempEbayPDFFinal));
+                    
+                    return response.data
+
+                })*/
+
+
+                let url = urlbase + "/ebaymakepdf";
+                let data = { list: ebayOrders.orders, ebayaccount: ebayAccount, filename: fileName }
+
+                fetch(url, {
+                    method: 'POST',
+                    body: JSON.stringify(data),
+                    headers: {
+                        'Access-Control-Allow-Origin': '*',
+                        'Content-Type': 'application/json',
+                    },
+                    
+                })
+                .then(response => {
+                    console.log(response);
                     if (response.statusText !== "OK"){
                         throw Error(response.statusText);
                     }
@@ -1207,6 +1294,11 @@ export function ebayOrdersFetchData(ebayAccount, oldEbayOrders, listLoading, eba
                     return response.data
 
                 })
+                
+
+
+
+
 
            }
         )
