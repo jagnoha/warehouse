@@ -21,7 +21,7 @@ import './client.js';
 //import { connect } from 'react-redux';
 //import configureStore from './modules/configureStore';
 import { connect } from 'react-redux';
-import { locationsFetchData, listingsFetchData, brandsFetchData, ebayMarketplacesFetchData } from './modules/actions';
+import { locationsFetchData, listingsFetchData, brandsFetchData, ebayMarketplacesFetchData, amazonPdfFileFetchCurrentData } from './modules/actions';
 //import ListingForm from './Components/ListingForm';
 
 //const store = configureStore();
@@ -40,7 +40,8 @@ class App extends React.PureComponent {
     this.props.fetchBrands(this.props.urlBase+'/getbrands');
     this.props.fetchEbayMarketplaces(this.props.urlBase+'/getebaymarketplaces');
     this.props.fetchListings(this.props.urlBase+'/getlistings', this.props.clickedColumn, this.props.direction === 'ascending' ? 'asc' : 'desc' );
-    
+    this.props.amazonPdfFileFetchCurrentData(this.props.urlBase+'/getamazonpdffile');
+
     setInterval(this.loadInformationFromServer, 60000);
   }
 
@@ -60,6 +61,7 @@ class App extends React.PureComponent {
     this.props.fetchLocations(this.props.urlBase+'/getlocations');
     this.props.fetchBrands(this.props.urlBase+'/getbrands');
     this.props.fetchEbayMarketplaces(this.props.urlBase+'/getebaymarketplaces');
+    this.props.amazonPdfFileFetchCurrentData(this.props.urlBase+'/getamazonpdffile');
     //if (this.props.isLoadingListings !== true){
            this.props.fetchListings(this.props.urlBase+'/getlistings', this.props.clickedColumn, this.props.direction === 'ascending' ? 'asc' : 'desc' );
     //}
@@ -130,7 +132,8 @@ const mapDispatchToProps = (dispatch) => {
       fetchLocations: (url) => dispatch(locationsFetchData(url)),
       fetchListings: (url, clickedColumn, order) => dispatch(listingsFetchData(url, clickedColumn, order)),
       fetchBrands: (url) => dispatch(brandsFetchData(url)),
-      fetchEbayMarketplaces: (url) => dispatch(ebayMarketplacesFetchData(url))
+      fetchEbayMarketplaces: (url) => dispatch(ebayMarketplacesFetchData(url)),
+      amazonPdfFileFetchCurrentData: (url) => dispatch(amazonPdfFileFetchCurrentData(url)),
   };
 };
 

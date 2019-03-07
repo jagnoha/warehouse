@@ -1289,8 +1289,10 @@ export function ebayOrdersFetchData(ebayAccount, oldEbayOrders, listLoading, eba
                         
                         let tempEbayPDF = ebayPdfFilesOld.filter(item => item.ebayMarketplace !== ebayAccount);
                         let tempEbayPDFFinal = tempEbayPDF.concat({ebayMarketplace: ebayAccount, file: fileName + '.pdf'});
-                        dispatch(fileNameEbayPdf(tempEbayPDFFinal));
-                    
+                        
+                        if (ebayOrders.orders.length > 0){
+                            dispatch(fileNameEbayPdf(tempEbayPDFFinal));
+                       }
                     return response.data
 
                 })
@@ -1305,6 +1307,140 @@ export function ebayOrdersFetchData(ebayAccount, oldEbayOrders, listLoading, eba
         .catch(() => dispatch(ebayOrdersIsLoading(listLoading)));
     }
 }
+
+export function amazonPdfFileIsLoading(bool){
+    return {
+        type: 'AMAZON_PDF_FILE_IS_LOADING',
+        isLoading: bool,
+    };
+}
+
+export function amazonPdfFileHasErrored(bool){
+    return {
+        type: 'AMAZON_PDF_FILE_HAS_ERRORED',
+        hasErrored: bool
+    };
+}
+
+
+export function amazonPdfFileFetchCurrentData(url) {
+    return (dispatch) => {
+        dispatch(amazonPdfFileIsLoading(true))
+
+        let config = {
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+            }
+        }
+        axios.get(url, config)
+        .then(response => {
+            
+            if (response.statusText !== "OK"){
+                throw Error(response.statusText);
+            }
+
+            dispatch(amazonPdfFileIsLoading(false));
+            
+            return response.data
+
+        })
+        .then((amazonPdfFile) => dispatch(amazonPdfFileFetchDataSuccess(amazonPdfFile)))
+        .catch(() => dispatch(amazonPdfFileIsLoading(false)));
+    }
+}
+
+export function amazonPdfFileFetchDataSuccess(amazonPdfFile) {
+    return {
+        type: 'AMAZON_PDF_FILE_FETCH_DATA_SUCCESS',
+        amazonPdfFile
+    };
+}
+
+export function amazonPdfFileFetchData(currentFile) {
+    return (dispatch) => {        
+
+        dispatch(amazonPdfFileIsLoading(true))
+        let config = {
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+            }
+        }
+
+                let fileName = uuidv4();          
+
+                let url = urlbase + "/amazonpdf";
+                let data = { filename: fileName }
+
+                fetch(url, {
+                    method: 'POST',
+                    body: JSON.stringify(data),
+                    headers: {
+                        'Access-Control-Allow-Origin': '*',
+                        'Content-Type': 'application/json',
+                    },
+                    
+                })
+                .then(responseAmazon => {
+                    console.log(responseAmazon);
+                    if (responseAmazon.statusText !== "OK"){
+                        throw Error(responseAmazon.statusText);
+                    }
+
+                    //dispatch(amazonPdfFileFetchCurrentData(urlbase+'/getamazonpdffile'));
+                    
+                    axios.get(urlbase + "/getamazonpdffile/", config)
+                    .then(response => {
+                        
+                        if (response.statusText !== "OK"){
+                            throw Error(response.statusText);
+                        }
+               
+                        return response
+            
+                    })
+                    .then((newAmazonFile) => {
+                        console.log(newAmazonFile.data.fileName);
+                        console.log(currentFile.fileName)
+                        if (currentFile.fileName !== newAmazonFile.data.fileName){
+                            dispatch(amazonPdfFileFetchDataSuccess(newAmazonFile))
+                        }
+
+                        dispatch(amazonPdfFileIsLoading(false));
+
+                    })
+                        
+
+
+                    /*axios.get(urlbase + "/getamazonpdffile/", config)
+                    .then(response => {
+                        
+                        if (response.statusText !== "OK"){
+                            throw Error(response.statusText);
+                        }
+               
+                        return responseAmazon.data
+            
+                    })
+                    .then((newAmazonFile) => {
+                    
+                        if (currentFile.fileName !== newAmazonFile.fileName){
+                            dispatch(amazonPdfFileFetchDataSuccess(newAmazonFile))
+                        }
+
+                        dispatch(amazonPdfFileIsLoading(false));
+                    
+                    
+                    })*/
+                    
+                    
+
+                    //dispatch(amazonPdfFileIsLoading(false));
+
+                }).catch(() => dispatch(amazonPdfFileIsLoading(false)));
+    }
+}
+
+
 
 export function createLabelsEbay(ebayAccount, fileNameList, ebayOrders, listLoading, fileName) {
     return (dispatch) => {

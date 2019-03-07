@@ -4,12 +4,89 @@ import {
     Button, Input, Form, Grid, Header, Image, 
     Menu, Label, Segment, Dropdown, Icon, Card } from 'semantic-ui-react';
 
-import { ebayOrdersFetchData, ebayOrdersUpdate } from '../modules/actions';
+import { ebayOrdersFetchData, ebayOrdersUpdate, amazonPdfFileFetchData } from '../modules/actions';
 import { connect } from 'react-redux';
 import { ebayMarketplaces } from '../modules/reducers/ebayMarketplaces';
 import axios from 'axios';
 
+class AmazonMarketplace extends Component {
 
+  _onClickGetOrders = () => {
+      //this.props.getOrdersAmazon(this.props.id)
+      console.log("GET ORDERS!");
+
+      this.props.amazonPdfFileFetchData(this.props.amazonPdfFile);
+
+      
+
+      
+  
+  
+  }
+
+  _onDownloadPDF = () => {
+   
+    console.log("DOWNLOAD PDF!");
+   
+
+    let fileName = this.props.amazonPdfFile.fileName + '.pdf';
+
+      //if (fileName.length > 0){
+
+          window.open(this.props.urlBase + '/amazonPDF/' + fileName);
+
+    /*
+
+    let fileName = this.props.fileNameEbayPdf.filter(item => item.ebayMarketplace === this.props.id)
+
+    if (fileName.length > 0){
+
+        window.open(this.props.urlBase + '/ebayPDF/' + fileName[0].file);
+    
+    }
+    */
+  
+  }
+
+  
+
+  render (){
+
+      let rightTime = String(new Date(this.props.amazonPdfFile.lastModified));
+
+      return (
+      <div>
+    <Card>
+      <Card.Content textAlign = 'center'>
+        <Card.Header>
+          Amazon Labels
+        </Card.Header>
+        Last Good Request: {rightTime}
+          
+      </Card.Content>
+      <Card.Content extra>
+        
+      {!this.props.amazonPdfFileIsLoading ?
+        <div className='ui two buttons'>
+          <Button onClick = {this._onClickGetOrders} size = 'small' basic color='green'>
+            Get Orders
+          </Button>
+          
+          <Button onClick = {this._onDownloadPDF} size = 'small' basic color='blue'>
+            Download File
+          </Button>
+        </div>
+        : <p>Processing</p>
+      }
+      
+      
+        
+      </Card.Content>
+    </Card>
+  </div>
+      )
+  }
+}
 
 class EbayMarketplace extends Component {
 
@@ -27,25 +104,7 @@ class EbayMarketplace extends Component {
           window.open(this.props.urlBase + '/ebayPDF/' + fileName[0].file);
       
       }
-      /*axios(this.props.urlBase + '/ebayPDF/' + this.props.fileNameEbayPdf, {
-        method: 'GET',
-        responseType: 'blob' //Force to receive data in a Blob Format
-    })
-    .then(response => {
-    //Create a Blob from the PDF Stream
-        const file = new Blob(
-          [response.data], 
-          {type: 'application/pdf'});
-
-          console.log(fileURL);
-    //Build a URL from the file
-        const fileURL = URL.createObjectURL(file);
-    //Open the URL on new Window
-        window.open(fileURL);
-    })
-    .catch(error => {
-        console.log(error);
-    });*/
+      
     
     }
 
@@ -92,6 +151,8 @@ class EbayMarketplace extends Component {
     }
 }
 
+
+
 class EbayMarketplaceList extends Component {
     render (){
         return (
@@ -104,6 +165,8 @@ class EbayMarketplaceList extends Component {
         )
     }
 }
+
+
 
 
 class Orders extends Component {
@@ -123,12 +186,19 @@ class Orders extends Component {
         return (
           <div>
             <Segment>
-              <h2>Orders</h2>
+              <h2>Ebay Orders</h2>
               </Segment>
             
             <EbayMarketplaceList ebayMarketplaces = {this.props.ebayMarketplaces} ebayOrders = {this.props.ebayOrders} 
             getOrders = {this._onClickGetOrders} ebayOrdersIsLoading = {this.props.ebayOrdersIsLoading} 
             fileNameEbayPdf = {this.props.fileNameEbayPdf} urlBase = {this.props.urlBase} />
+              <Segment>
+              <h2>Amazon Orders</h2>
+              </Segment>
+
+            <AmazonMarketplace urlBase = {this.props.urlBase} 
+            amazonPdfFileIsLoading={this.props.amazonPdfFileIsLoading} amazonPdfFile={this.props.amazonPdfFile} 
+            amazonPdfFileFetchData = {this.props.amazonPdfFileFetchData} />
             
           </div>
         )
@@ -139,6 +209,8 @@ const mapStateToProps = (state) => {
   return {
       ebayOrders: state.ebayOrders,
       ebayOrdersIsLoading: state.ebayOrdersIsLoading,
+      amazonPdfFileIsLoading: state.amazonPdfFileIsLoading,
+      amazonPdfFile: state.amazonPdfFile,
       urlBase: state.urlBase,
       ebayMarketplaces: state.ebayMarketplaces,
       fileNameEbayPdf: state.fileNameEbayPdf,
@@ -149,6 +221,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
       fetchebayOrders: (ebayAccount, oldEbayOrders, listLoading, ebayPdfFilesOld) => dispatch(ebayOrdersFetchData(ebayAccount, oldEbayOrders, listLoading, ebayPdfFilesOld)),
       ebayOrdersUpdate: (ebayOrders) => dispatch(ebayOrdersUpdate(ebayOrders)),
+      amazonPdfFileFetchData: (currentFile) => dispatch(amazonPdfFileFetchData(currentFile)),
   };
 };
 
