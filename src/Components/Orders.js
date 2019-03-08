@@ -4,25 +4,42 @@ import {
     Button, Input, Form, Grid, Header, Image, 
     Menu, Label, Segment, Dropdown, Icon, Card } from 'semantic-ui-react';
 
-import { ebayOrdersFetchData, ebayOrdersUpdate, amazonPdfFileFetchData } from '../modules/actions';
+import { ebayOrdersFetchData, ebayOrdersUpdate, amazonPdfFileFetchData, amazonPdfFileFetchCurrentData } from '../modules/actions';
 import { connect } from 'react-redux';
 import { ebayMarketplaces } from '../modules/reducers/ebayMarketplaces';
 import axios from 'axios';
 
 class AmazonMarketplace extends Component {
 
-  _onClickGetOrders = () => {
-      //this.props.getOrdersAmazon(this.props.id)
+  /*state = {
+    processing: false,
+  }*/
+
+  /*_onAmazonClickGetOrders = () => {
+      
       console.log("GET ORDERS!");
-
+      
+      
+      
+      this.setState({processing: true})
+      
       this.props.amazonPdfFileFetchData(this.props.amazonPdfFile);
-
       
+      setTimeout(() => {
+        this.props.amazonPdfFileFetchCurrentData(this.props.urlBase+'/getamazonpdffile')
+      }, 4000);
+
+      setTimeout(() => {
+        this.props.amazonPdfFileFetchCurrentData(this.props.urlBase+'/getamazonpdffile')
+      }, 8000);
+
+      setTimeout(() => {
+        this.setState({processing: false})
+      }, 12000);
 
       
   
-  
-  }
+  }*/
 
   _onDownloadPDF = () => {
    
@@ -66,11 +83,9 @@ class AmazonMarketplace extends Component {
       </Card.Content>
       <Card.Content extra>
         
-      {!this.props.amazonPdfFileIsLoading ?
+      {!this.props.amazonPdfFileIsLoading && !this.props.processing ?
         <div className='ui two buttons'>
-          <Button onClick = {this._onClickGetOrders} size = 'small' basic color='green'>
-            Get Orders
-          </Button>
+          
           
           <Button onClick = {this._onDownloadPDF} size = 'small' basic color='blue'>
             Download File
@@ -90,9 +105,7 @@ class AmazonMarketplace extends Component {
 
 class EbayMarketplace extends Component {
 
-    _onClickGetOrders = () => {
-        this.props.getOrders(this.props.id)
-    }
+    
 
     _onDownloadPDF = () => {
      
@@ -126,11 +139,8 @@ class EbayMarketplace extends Component {
         </Card.Content>
         <Card.Content extra>
           
-          {this.props.ebayOrdersIsLoading.filter(item => item === this.props.id).length < 1  ? 
+          {!this.props.ebayOrdersIsLoading  ? 
           <div className='ui two buttons'>
-            <Button onClick = {this._onClickGetOrders} size = 'small' basic color='green'>
-              Get Orders
-            </Button>
             
             <Button onClick = {this._onDownloadPDF} size = 'small' basic color='blue'>
               Download File
@@ -170,15 +180,46 @@ class EbayMarketplaceList extends Component {
 
 
 class Orders extends Component {
+
+  state = {
+    processing: false,
+  }
+
+  _onAmazonClickGetOrders = () => {
+      
+    console.log("GET ORDERS!");
     
-    _onClickGetOrders = (ebayMarketplace) => {
+    
+    
+    this.setState({processing: true})
+    
+    this.props.amazonPdfFileFetchData(this.props.amazonPdfFile);
+    
+    setTimeout(() => {
+      this.props.amazonPdfFileFetchCurrentData(this.props.urlBase+'/getamazonpdffile')
+    }, 4000);
+
+    setTimeout(() => {
+      this.props.amazonPdfFileFetchCurrentData(this.props.urlBase+'/getamazonpdffile')
+    }, 8000);
+
+    setTimeout(() => {
+      this.setState({processing: false})
+    }, 12000);
+
+    
+
+}
+    
+    _onEbayClickGetOrders = () => {
         
        
  
         //let page = 1;
         //this.props.fetchebayOrders(this.props.urlBase + "/getorders/39d9cfd4-adb6-4a47-abf5-b8d2a18e1352/" + page);        
-        let ebayLoading = this.props.ebayOrdersIsLoading === undefined ? [] : this.props.ebayOrdersIsLoading;
-        this.props.fetchebayOrders(ebayMarketplace, this.props.ebayOrders, ebayLoading, this.props.fileNameEbayPdf);        
+        //let ebayLoading = this.props.ebayOrdersIsLoading === undefined ? [] : this.props.ebayOrdersIsLoading;
+
+        this.props.fetchebayOrders(this.props.ebayMarketplaces, this.props.ebayOrders, this.props.fileNameEbayPdf);        
     
     }
       
@@ -187,6 +228,16 @@ class Orders extends Component {
           <div>
             <Segment>
               <h2>Ebay Orders</h2>
+              {!this.props.ebayOrdersIsLoading ?
+              <Button onClick = {this._onEbayClickGetOrders} size = 'small' basic color='green'>
+                Get Orders
+              </Button>
+              :
+              <Button disabled = {true} size = 'small' basic color='green'>
+                Get Orders
+              </Button>
+              }
+            
               </Segment>
             
             <EbayMarketplaceList ebayMarketplaces = {this.props.ebayMarketplaces} ebayOrders = {this.props.ebayOrders} 
@@ -194,11 +245,36 @@ class Orders extends Component {
             fileNameEbayPdf = {this.props.fileNameEbayPdf} urlBase = {this.props.urlBase} />
               <Segment>
               <h2>Amazon Orders</h2>
+              
+              
+              
+              
+              {!this.props.amazonPdfFileIsLoading && !this.state.processing ?
+              
+          
+                <Button onClick = {this._onAmazonClickGetOrders} size = 'small' basic color='green'>
+                Get Orders
+                  </Button>
+                : 
+
+                <Button disabled = {true} size = 'small' basic color='green'>
+                Get Orders
+                  </Button>
+
+                }
+              
+              
+              
+              
+              
+              
+              
               </Segment>
 
-            <AmazonMarketplace urlBase = {this.props.urlBase} 
+            <AmazonMarketplace urlBase = {this.props.urlBase} processing = {this.state.processing}
             amazonPdfFileIsLoading={this.props.amazonPdfFileIsLoading} amazonPdfFile={this.props.amazonPdfFile} 
-            amazonPdfFileFetchData = {this.props.amazonPdfFileFetchData} />
+            amazonPdfFileFetchData = {this.props.amazonPdfFileFetchData} 
+            amazonPdfFileFetchCurrentData = {this.props.amazonPdfFileFetchCurrentData} />
             
           </div>
         )
@@ -219,9 +295,10 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-      fetchebayOrders: (ebayAccount, oldEbayOrders, listLoading, ebayPdfFilesOld) => dispatch(ebayOrdersFetchData(ebayAccount, oldEbayOrders, listLoading, ebayPdfFilesOld)),
+      fetchebayOrders: (ebayAccounts, oldEbayOrders, ebayPdfFilesOld) => dispatch(ebayOrdersFetchData(ebayAccounts, oldEbayOrders, ebayPdfFilesOld)),
       ebayOrdersUpdate: (ebayOrders) => dispatch(ebayOrdersUpdate(ebayOrders)),
       amazonPdfFileFetchData: (currentFile) => dispatch(amazonPdfFileFetchData(currentFile)),
+      amazonPdfFileFetchCurrentData: (url) => dispatch(amazonPdfFileFetchCurrentData(url)),
   };
 };
 

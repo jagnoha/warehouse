@@ -61,7 +61,7 @@ class App extends React.PureComponent {
     this.props.fetchLocations(this.props.urlBase+'/getlocations');
     this.props.fetchBrands(this.props.urlBase+'/getbrands');
     this.props.fetchEbayMarketplaces(this.props.urlBase+'/getebaymarketplaces');
-    this.props.amazonPdfFileFetchCurrentData(this.props.urlBase+'/getamazonpdffile');
+    //this.props.amazonPdfFileFetchCurrentData(this.props.urlBase+'/getamazonpdffile');
     //if (this.props.isLoadingListings !== true){
            this.props.fetchListings(this.props.urlBase+'/getlistings', this.props.clickedColumn, this.props.direction === 'ascending' ? 'asc' : 'desc' );
     //}

@@ -1148,163 +1148,120 @@ export function fileNameEbayPdf(list){
 
 
 
-export function ebayOrdersFetchData(ebayAccount, oldEbayOrders, listLoading, ebayPdfFilesOld) {
+export function ebayOrdersFetchData(ebayAccounts, oldEbayOrders, ebayPdfFilesOld) {
     return (dispatch) => {
-        let listOld = listLoading;
+        /*let listOld = listLoading;
         let list = listLoading;
         list = list.concat(ebayAccount);
-
-        //dispatch(ebayOrdersIsLoading(true));
-
-        dispatch(ebayOrdersIsLoading(list))
-
+        */
+        
+       dispatch(ebayOrdersIsLoading(true));
+        
         let config = {
             headers: {
                 'Access-Control-Allow-Origin': '*',
             }
         }
-        axios.get(urlbase + "/getorders/" + ebayAccount + "/1", config)
-        .then(response => {
-            
-            if (response.statusText !== "OK"){
-                throw Error(response.statusText);
-            }
 
-            dispatch(ebayOrdersIsLoading(listOld));
+        //async (ebayAccounts) => {        
+
+        //for (const item of ebayAccounts){
+
+       function callback () { dispatch(ebayOrdersIsLoading(false)) }
+       
+       let itemsProcessed = 0;
+
+        ebayAccounts.forEach((item, index, array)=>{
             
-            return response.data
+            //dispatch(ebayOrdersIsLoading(true));
+            let ebayAccount = item.id;
+
+
+            axios.get(urlbase + "/getorders/" + ebayAccount + "/1", config)
+            .then(response => {
+                
+                if (response.statusText !== "OK"){
+                    throw Error(response.statusText);
+                }
+    
+                //dispatch(ebayOrdersIsLoading(listOld));
+                dispatch(ebayOrdersIsLoading(true));
+                return response.data
+    
+            })
+            .then((ebayOrders) => 
+               
+                {
+                    console.log(ebayOrders.orders);
+    
+                    let tempEbayOrders = oldEbayOrders.filter(item => item.ebayMarketplace !== ebayAccount);
+    
+                    let ebayOrdersFinal = tempEbayOrders.concat({ebayMarketplace: ebayAccount, orders: ebayOrders.orders})
+    
+                    
+                    
+                    //dispatch(ebayOrdersFetchDataSuccess(ebayOrdersFinal))
+    
+                    
+                    
+                    
+                    let fileName = uuidv4();
+                    
+    
+    
+                    let url = urlbase + "/ebaymakepdf";
+                    let data = { list: ebayOrders.orders, ebayaccount: ebayAccount, filename: fileName }
+    
+                    fetch(url, {
+                        method: 'POST',
+                        body: JSON.stringify(data),
+                        headers: {
+                            'Access-Control-Allow-Origin': '*',
+                            'Content-Type': 'application/json',
+                        },
+                        
+                    })
+                    .then(response => {
+                        console.log(response);
+                        if (response.statusText !== "OK"){
+                            throw Error(response.statusText);
+                        }
+                            //dispatch(ebayOrdersIsLoading(listOld));
+                            dispatch(ebayOrdersFetchDataSuccess(ebayOrdersFinal));
+                            
+                            let tempEbayPDF = ebayPdfFilesOld.filter(item => item.ebayMarketplace !== ebayAccount);
+                            let tempEbayPDFFinal = tempEbayPDF.concat({ebayMarketplace: ebayAccount, file: fileName + '.pdf'});
+                            
+                            if (ebayOrders.orders.length > 0){
+                                dispatch(fileNameEbayPdf(tempEbayPDFFinal));
+                           }
+                        
+                        //dispatch(ebayOrdersIsLoading(true));
+                        //const result = await response.data
+                        itemsProcessed++;
+                        if(itemsProcessed === array.length) {
+                            callback();
+                        }
+                        return response.data
+
+                        
+    
+                    })
+                    
+                    //dispatch(ebayOrdersIsLoading());
+    
+               }
+            )
+            .catch(() => dispatch(ebayOrdersIsLoading(false)));
+        
 
         })
-        .then((ebayOrders) => 
-           
-            {
-                console.log(ebayOrders.orders);
+        
 
-                let tempEbayOrders = oldEbayOrders.filter(item => item.ebayMarketplace !== ebayAccount);
+        //}
 
-                let ebayOrdersFinal = tempEbayOrders.concat({ebayMarketplace: ebayAccount, orders: ebayOrders.orders})
-
-                
-                
-                //dispatch(ebayOrdersFetchDataSuccess(ebayOrdersFinal))
-
-                
-                
-                
-                let fileName = uuidv4();
-                /*let config = {
-                        headers: {
-                        'Access-Control-Allow-Origin': '*',
-                }
-                } */      
-                
-                
-                
-                  /*axios.get(urlbase + '/ebaymakepdf', {
-                    headers: {
-                        'Access-Control-Allow-Origin': '*',
-                    },
-                    params: {                    
-                        list: ebayOrders.orders,
-                        ebayaccount: ebayAccount,
-                        filename: fileName,
-                    },
-                  })
-                  .then(response => {
-                    console.log(response);
-                    if (response.statusText !== "OK"){
-                        throw Error(response.statusText);
-                    }
-                        dispatch(ebayOrdersIsLoading(listOld));
-                        dispatch(ebayOrdersFetchDataSuccess(ebayOrdersFinal));
-                        
-                        let tempEbayPDF = ebayPdfFilesOld.filter(item => item.ebayMarketplace !== ebayAccount);
-                        let tempEbayPDFFinal = tempEbayPDF.concat({ebayMarketplace: ebayAccount, file: fileName + '.pdf'});
-                        dispatch(fileNameEbayPdf(tempEbayPDFFinal));
-                    
-                    return response.data
-
-                    })*/
-
-
-                 /* axios.post(urlbase + "/ebaymakepdf", config)
-                .then(response => {
-                    console.log(response);
-                    if (response.statusText !== "OK"){
-                        throw Error(response.statusText);
-                    }
-                        dispatch(ebayOrdersIsLoading(listOld));
-                        dispatch(ebayOrdersFetchDataSuccess(ebayOrdersFinal));
-                        
-                        let tempEbayPDF = ebayPdfFilesOld.filter(item => item.ebayMarketplace !== ebayAccount);
-                        let tempEbayPDFFinal = tempEbayPDF.concat({ebayMarketplace: ebayAccount, file: fileName + '.pdf'});
-                        dispatch(fileNameEbayPdf(tempEbayPDFFinal));
-                    
-                    return response.data
-
-                })*/
-
-                /*fetch(urlbase + "/ebaymakepdf/" + encodeURIComponent(JSON.stringify(ebayOrders.orders)) + '/' + ebayAccount
-                + '/' + fileName, {
-                    headers: {
-                        'Access-Control-Allow-Origin': '*',
-                    }
-                })
-                .then(response => {
-                    console.log(response);
-                    if (response.statusText !== "OK"){
-                        throw Error(response.statusText);
-                    }
-                        dispatch(ebayOrdersIsLoading(listOld));
-                        dispatch(ebayOrdersFetchDataSuccess(ebayOrdersFinal));
-                        
-                        let tempEbayPDF = ebayPdfFilesOld.filter(item => item.ebayMarketplace !== ebayAccount);
-                        let tempEbayPDFFinal = tempEbayPDF.concat({ebayMarketplace: ebayAccount, file: fileName + '.pdf'});
-                        dispatch(fileNameEbayPdf(tempEbayPDFFinal));
-                    
-                    return response.data
-
-                })*/
-
-
-                let url = urlbase + "/ebaymakepdf";
-                let data = { list: ebayOrders.orders, ebayaccount: ebayAccount, filename: fileName }
-
-                fetch(url, {
-                    method: 'POST',
-                    body: JSON.stringify(data),
-                    headers: {
-                        'Access-Control-Allow-Origin': '*',
-                        'Content-Type': 'application/json',
-                    },
-                    
-                })
-                .then(response => {
-                    console.log(response);
-                    if (response.statusText !== "OK"){
-                        throw Error(response.statusText);
-                    }
-                        dispatch(ebayOrdersIsLoading(listOld));
-                        dispatch(ebayOrdersFetchDataSuccess(ebayOrdersFinal));
-                        
-                        let tempEbayPDF = ebayPdfFilesOld.filter(item => item.ebayMarketplace !== ebayAccount);
-                        let tempEbayPDFFinal = tempEbayPDF.concat({ebayMarketplace: ebayAccount, file: fileName + '.pdf'});
-                        
-                        if (ebayOrders.orders.length > 0){
-                            dispatch(fileNameEbayPdf(tempEbayPDFFinal));
-                       }
-                    return response.data
-
-                })
-                
-
-
-
-
-
-           }
-        )
-        .catch(() => dispatch(ebayOrdersIsLoading(listLoading)));
+        //dispatch(ebayOrdersIsLoading(false));
+    
     }
 }
 
@@ -1356,7 +1313,14 @@ export function amazonPdfFileFetchDataSuccess(amazonPdfFile) {
     };
 }
 
-export function amazonPdfFileFetchData(currentFile) {
+export function amazonPdfFileUpdated(amazonPdfFile) {
+    return {
+        type: 'AMAZON_PDF_FILE_UPDATED',
+        amazonPdfFile
+    };
+}
+
+/*export function amazonPdfFileFetchData(currentFile) {
     return (dispatch) => {        
 
         dispatch(amazonPdfFileIsLoading(true))
@@ -1399,18 +1363,59 @@ export function amazonPdfFileFetchData(currentFile) {
             
                     })
                     .then((newAmazonFile) => {
-                        console.log(newAmazonFile.data.fileName);
-                        console.log(currentFile.fileName)
-                        if (currentFile.fileName !== newAmazonFile.data.fileName){
-                            dispatch(amazonPdfFileFetchDataSuccess(newAmazonFile))
-                        }
+                        console.log(newAmazonFile.data);
+                        console.log(currentFile)
+                        //if (fileName !== newAmazonFile.data.fileName){
+                            dispatch(amazonPdfFileFetchDataSuccess(newAmazonFile.data))
+                        //}
 
                         dispatch(amazonPdfFileIsLoading(false));
+                        
+                        //return newAmazonFile
 
                     })
                         
 
 
+                   
+
+                }).catch(() => dispatch(amazonPdfFileIsLoading(false)));
+    }
+}*/
+
+export function amazonPdfFileFetchData(currentFile) {
+    return (dispatch) => {        
+
+        dispatch(amazonPdfFileIsLoading(true))
+        let config = {
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+            }
+        }
+
+                let fileName = uuidv4();          
+
+                let url = urlbase + "/amazonpdf";
+                let data = { filename: fileName }
+
+                fetch(url, {
+                    method: 'POST',
+                    body: JSON.stringify(data),
+                    headers: {
+                        'Access-Control-Allow-Origin': '*',
+                        'Content-Type': 'application/json',
+                    },
+                    
+                })
+                .then(responseAmazon => {
+                    console.log(responseAmazon);
+                    if (responseAmazon.statusText !== "OK"){
+                        throw Error(responseAmazon.statusText);
+                    }
+
+                    dispatch(amazonPdfFileIsLoading(false));
+                    
+                    
                     /*axios.get(urlbase + "/getamazonpdffile/", config)
                     .then(response => {
                         
@@ -1418,23 +1423,20 @@ export function amazonPdfFileFetchData(currentFile) {
                             throw Error(response.statusText);
                         }
                
-                        return responseAmazon.data
-            
-                    })
-                    .then((newAmazonFile) => {
-                    
-                        if (currentFile.fileName !== newAmazonFile.fileName){
-                            dispatch(amazonPdfFileFetchDataSuccess(newAmazonFile))
-                        }
+                        let newFileName = response.data.fileName;
 
+                        console.log(newFileName);
+                        console.log(currentFile.fileName);
+
+                        dispatch(amazonPdfFileFetchDataSuccess(response.data))
+                        //dispatch(amazonPdfFileUpdated(response.data))            
                         dispatch(amazonPdfFileIsLoading(false));
-                    
-                    
+            
                     })*/
-                    
-                    
+                        
 
-                    //dispatch(amazonPdfFileIsLoading(false));
+
+                   
 
                 }).catch(() => dispatch(amazonPdfFileIsLoading(false)));
     }

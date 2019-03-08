@@ -8,7 +8,7 @@ export function ebayOrdersHasErrored(state = [], action) {
     }
 }
 
-export function ebayOrdersIsLoading(state = [], action) {
+export function ebayOrdersIsLoading(state = false, action) {
     switch (action.type) {
         case 'EBAY_ORDERS_IS_LOADING':
             return action.ebayOrdersIsLoading;

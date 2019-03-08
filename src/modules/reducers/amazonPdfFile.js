@@ -22,6 +22,8 @@ export function amazonPdfFile(state = {}, action) {
     switch (action.type) {
         case 'AMAZON_PDF_FILE_FETCH_DATA_SUCCESS':
             return action.amazonPdfFile;
+        case 'AMAZON_PDF_FILE_UPDATED':
+            return action.amazonPdfFile;
 
         default:
             return state;
