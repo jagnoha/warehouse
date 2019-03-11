@@ -139,21 +139,20 @@ class EbayMarketplace extends Component {
         </Card.Content>
         <Card.Content extra>
           
-          {!this.props.ebayOrdersIsLoading  ? 
+          {!this.props.ebayOrdersIsLoading &&   
           <div className='ui two buttons'>
             
             <Button onClick = {this._onDownloadPDF} size = 'small' basic color='blue'>
               Download File
             </Button>
-            
-            
-
                 
-          </div> : <p>Processing</p> 
+          </div> 
         
+          }
+        {this.props.ebayOrdersIsLoading &&
+          <p>Processing</p> 
         }
-        
-          
+
         </Card.Content>
       </Card>
     </div>

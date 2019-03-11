@@ -1170,6 +1170,9 @@ export function ebayOrdersFetchData(ebayAccounts, oldEbayOrders, ebayPdfFilesOld
        function callback () { dispatch(ebayOrdersIsLoading(false)) }
        
        let itemsProcessed = 0;
+       let ebayOrdersFinal = [];
+       let tempEbayPDFFinal = [];
+       
 
         ebayAccounts.forEach((item, index, array)=>{
             
@@ -1194,9 +1197,9 @@ export function ebayOrdersFetchData(ebayAccounts, oldEbayOrders, ebayPdfFilesOld
                 {
                     console.log(ebayOrders.orders);
     
-                    let tempEbayOrders = oldEbayOrders.filter(item => item.ebayMarketplace !== ebayAccount);
+                    //let tempEbayOrders = oldEbayOrders.filter(item => item.ebayMarketplace !== ebayAccount);
     
-                    let ebayOrdersFinal = tempEbayOrders.concat({ebayMarketplace: ebayAccount, orders: ebayOrders.orders})
+                    ebayOrdersFinal = ebayOrdersFinal.concat({ebayMarketplace: ebayAccount, orders: ebayOrders.orders})
     
                     
                     
@@ -1229,8 +1232,8 @@ export function ebayOrdersFetchData(ebayAccounts, oldEbayOrders, ebayPdfFilesOld
                             //dispatch(ebayOrdersIsLoading(listOld));
                             dispatch(ebayOrdersFetchDataSuccess(ebayOrdersFinal));
                             
-                            let tempEbayPDF = ebayPdfFilesOld.filter(item => item.ebayMarketplace !== ebayAccount);
-                            let tempEbayPDFFinal = tempEbayPDF.concat({ebayMarketplace: ebayAccount, file: fileName + '.pdf'});
+                            //let tempEbayPDF = ebayPdfFilesOld.filter(item => item.ebayMarketplace !== ebayAccount);
+                            tempEbayPDFFinal = tempEbayPDFFinal.concat({ebayMarketplace: ebayAccount, file: fileName + '.pdf'});
                             
                             if (ebayOrders.orders.length > 0){
                                 dispatch(fileNameEbayPdf(tempEbayPDFFinal));
