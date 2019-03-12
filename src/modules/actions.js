@@ -1173,7 +1173,7 @@ export function ebayOrdersFetchData(ebayAccounts, oldEbayOrders, ebayPdfFilesOld
        let ebayOrdersFinal = [];
        let tempEbayPDFFinal = [];
        
-
+        try{
         ebayAccounts.forEach((item, index, array)=>{
             
             //dispatch(ebayOrdersIsLoading(true));
@@ -1259,7 +1259,11 @@ export function ebayOrdersFetchData(ebayAccounts, oldEbayOrders, ebayPdfFilesOld
         
 
         })
-        
+
+       } catch(error){
+            console.log(error);
+            dispatch(ebayOrdersIsLoading(false))
+       }
 
         //}
 
