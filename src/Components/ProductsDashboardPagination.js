@@ -31,7 +31,7 @@ class ProductsDashboardPagination extends Component {
         return list;
       }
     }
-    function checkStatusFilterActive(list, statusFilterActive){
+    function checkStatusFilterActive(list, statusFilterActive, listLocations){
       /*if (statusFilterActive !== 'ALL'){
         return list.filter(item => item.status === statusFilterActive)
       } else {
@@ -47,6 +47,22 @@ class ProductsDashboardPagination extends Component {
         return list.filter(item => item.status === 'offline' && Number(item.quantity) > 0 && item.price && item.location.length > 0 )
       } else if (statusFilterActive === 'goodtorevise'){
         return list.filter(item => item.status === 'offline' && Number(item.quantity) > 0 && !item.price && item.location.length > 0 )
+      } else if (statusFilterActive === 'readyforebay'){
+              
+               
+        let tempList = (list.filter(item => item.status === 'offline' && Number(item.quantity) > 0 && item.price && 
+        item.location.length > 0)) 
+        
+        
+        return (
+          
+          tempList.filter(item => !isFinite(window.helpers.getLocationFromId(listLocations, item.location[0]))     )
+        
+        )  
+        
+        
+      
+      
       } else if (statusFilterActive === 'toshelf'){
         return list.filter(item => item.status === 'offline' && Number(item.quantity) > 0 && item.location.length === 0 )            }
       else if (statusFilterActive === 'error'){
@@ -98,7 +114,7 @@ class ProductsDashboardPagination extends Component {
       
     }
 
-  const listingsFiltered = checkSearchFilter(checkUsersFilterActive(checkEbayMarketplacesFilterActive(checkStatusFilterActive(checkConditionsFilterActive(this.props.listings, this.props.filterByCondition), this.props.filterByStatus), this.props.filterByMarketplace), this.props.filterByUser),this.props.filterBySearch);
+  const listingsFiltered = checkSearchFilter(checkUsersFilterActive(checkEbayMarketplacesFilterActive(checkStatusFilterActive(checkConditionsFilterActive(this.props.listings, this.props.filterByCondition), this.props.filterByStatus, this.props.locations), this.props.filterByMarketplace), this.props.filterByUser),this.props.filterBySearch);
   
     //const totalPages = this.props.listings.chunk(this.props.productsByPage).length;
     const totalPages = listingsFiltered.chunk(this.props.productsByPage).length;
@@ -122,8 +138,8 @@ class ProductsDashboardPagination extends Component {
 
 const mapStateToProps = (state) => {
   return {
-      /*locations: state.locations,
-      hasErroredLocations: state.locationsHasErrored,
+      locations: state.locations,
+      /*hasErroredLocations: state.locationsHasErrored,
       isLoadingLocations: state.locationsIsLoading,*/
       listings: state.listings,
       filterByCondition: state.filterByCondition,

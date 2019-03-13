@@ -18,6 +18,8 @@ import {
  import '../helpers.js';
  import ImageUploader from 'react-images-upload';
  import ImageList from './ImageList';
+ import Moment from 'react-moment';
+ import 'moment-timezone';
 
  //const urlbase = 'http://10.0.0.216:8083';
  //const urlbase = 'http://192.168.1.11:8083';
@@ -196,7 +198,13 @@ class Product extends Component {
                         <Price price = {this.props.item.price} />
                       
                     </Table.Cell>
-                    <Table.Cell><div>{this.props.item.timestamp}</div> <span className='App-secondary-table-title'>{this.props.item.lastModified}</span></Table.Cell>
+                    
+                    
+                    <Table.Cell><div><Moment format="YYYY/MM/DD HH:mm">{this.props.item.timestamp}</Moment></div> <span className='App-secondary-table-title'><Moment format="YYYY/MM/DD HH:mm">{this.props.item.lastModified}</Moment></span></Table.Cell>
+                    
+                    
+                    
+                    
                     <Table.Cell collapsing>
                       
                     { (this.props.picturesIsLoading.filter(item => item === this.props.item.uuid).length === 0 && this.props.item.pictures !== 'PENDING') ?  <span>

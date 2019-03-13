@@ -4,12 +4,13 @@ import Product from './Product'
 import '../helpers.js'
 import { connect } from 'react-redux';
 import {Dimmer, Loader, Message, Table} from 'semantic-ui-react';
-import { changeListingsFiltered, changeProductsInPage  } from '../modules/actions';
-
+import { changeListingsFiltered, changeProductsInPage, locationsFetchData  } from '../modules/actions';
 
 
 class ProductsTableList extends Component {    
+  
     
+
     render(){
         
         const searchIsChecked = this.props.searchIsChecked;
@@ -25,7 +26,9 @@ class ProductsTableList extends Component {
             }
         }
 
-        function checkStatusFilterActive(list, statusFilterActive){
+        function checkStatusFilterActive(list, statusFilterActive, listLocations){
+
+          
             
             if (statusFilterActive === 'online'){
               return list.filter(item => item.status === 'online')
@@ -37,6 +40,22 @@ class ProductsTableList extends Component {
               return list.filter(item => item.status === 'offline' && Number(item.quantity) > 0 && item.price && item.location.length > 0 )
             } else if (statusFilterActive === 'goodtorevise'){
               return list.filter(item => item.status === 'offline' && Number(item.quantity) > 0 && !item.price && item.location.length > 0 )
+            } else if (statusFilterActive === 'readyforebay'){
+              
+               
+              let tempList = (list.filter(item => item.status === 'offline' && Number(item.quantity) > 0 && item.price && 
+              item.location.length > 0)) 
+              
+              
+              return (
+                
+                tempList.filter(item => !isFinite(window.helpers.getLocationFromId(listLocations, item.location[0]))     )
+              
+              )  
+              
+              
+            
+            
             } else if (statusFilterActive === 'toshelf'){
               return list.filter(item => item.status === 'offline' && Number(item.quantity) > 0 && item.location.length === 0 )            }
             else if (statusFilterActive === 'error'){
@@ -114,7 +133,7 @@ class ProductsTableList extends Component {
             
           }
 
-        const listingsFilteredResult = checkSearchFilter(checkUsersFilterActive(checkEbayMarketplacesFilterActive(checkStatusFilterActive(checkConditionsFilterActive(this.props.listings,this.props.filterByCondition), this.props.filterByStatus), this.props.filterByMarketplace), this.props.filterByUser),this.props.filterBySearch);
+        const listingsFilteredResult = checkSearchFilter(checkUsersFilterActive(checkEbayMarketplacesFilterActive(checkStatusFilterActive(checkConditionsFilterActive(this.props.listings,this.props.filterByCondition), this.props.filterByStatus, this.props.locations), this.props.filterByMarketplace), this.props.filterByUser),this.props.filterBySearch);
         
         this.props.changeListingsFiltered(listingsFilteredResult.length);
 
@@ -195,15 +214,15 @@ class ProductsTableList extends Component {
             )
         }
 
+
+
+        try {
         
         return (
             
             
-            //this.props.listings.chunk(this.props.productsByPage)[Number(this.props.activePage)-1].map(item => 
             listingsFilteredResult.chunk(this.props.productsByPage)[Number(this.props.activePage)-1].map(item => { 
-            //console.log(item.uuid);
-            //this.props.addProductsInPage(productsInPage, item.uuid);
-
+         
 
 
             
@@ -217,17 +236,77 @@ class ProductsTableList extends Component {
                 brandItem = { window.helpers.getBrandFromId(this.props.brands, item.brand) }
                 
                 userListItem = { window.helpers.getNameFromId(this.props.users, item.authorId) }
-                //userListItem = {item.authorId}
                 
-                //conditionItem = {window.helpers.getConditionFromId(this.props.conditions, item.condition)}
                 ebayMarketplaceItem = {window.helpers.getEbayMarketplaceFromId(this.props.ebayMarketplaces, item.ebayAccount)}
                 
             /> 
 
-        )}
+            )}
            
            )
+
+
+
+           
+
+
         )
+
+            } catch(error){
+
+              return (
+                <Table.Row>
+              <Table.Cell collapsing>
+                
+              </Table.Cell>
+              
+              <Table.Cell>
+              </Table.Cell>
+              <Table.Cell>
+              </Table.Cell>
+              <Table.Cell>
+                </Table.Cell>
+              
+              <Table.Cell>
+              </Table.Cell>
+              <Table.Cell>
+
+
+
+              </Table.Cell>
+              <Table.Cell>
+              <Message
+                    warning
+                    header='Sorry, this option has not generated any results!'
+                    content='Try again using different parameters'
+                />
+              </Table.Cell>
+                
+
+
+              <Table.Cell>
+              </Table.Cell>
+              <Table.Cell>                
+              </Table.Cell>
+              <Table.Cell>
+              </Table.Cell>
+              <Table.Cell></Table.Cell>
+              <Table.Cell>
+              </Table.Cell>              
+        </Table.Row>
+            )
+            
+            
+            
+            
+            
+            
+            }
+
+
+
+
+
         
     }
 }
@@ -264,8 +343,8 @@ const mapStateToProps = (state) => {
   
   const mapDispatchToProps = (dispatch) => {
     return {
-        /*fetchLocations: (url) => dispatch(locationsFetchData(url)),
-        fetchListings: (url) => dispatch(listingsFetchData(url)),
+        fetchLocations: (url) => dispatch(locationsFetchData(url)),
+        /*fetchListings: (url) => dispatch(listingsFetchData(url)),
         fetchBrands: (url) => dispatch(brandsFetchData(url))*/
         changeListingsFiltered: (quantity) => dispatch(changeListingsFiltered(quantity)),
         changeProductsInPage: (list) => dispatch(changeProductsInPage(list)),
