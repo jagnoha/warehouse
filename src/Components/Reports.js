@@ -6,27 +6,18 @@ import {
 
 import { userActiveFetchData, listingUpdateDatabase } from '../modules/actions';
 import { connect } from 'react-redux';
-import Moment from 'react-moment';
-import moment from 'moment'
+//import Moment from 'react-moment';
+import moment from 'moment';
+import ReactChartkick, { LineChart, PieChart } from 'react-chartkick';
+import Chart from 'chart.js';
+import '../helpers.js';
+
+ReactChartkick.addAdapter(Chart)
 
 
 
 
-/*class Report extends Component {
 
-}*/
-
-function createToday(todayDay, todayList){
-  let countedUsers = todayList.reduce(function (allUsers, user) { 
-    if (user in allUsers) {
-      allUsers[user]++;
-    }
-    else {
-      allUsers[user] = 1;
-    }
-    return allUsers;
-  }, {});
-}
 
 class Reports extends Component {
   
@@ -39,6 +30,10 @@ class Reports extends Component {
    today: this.props.listings.filter(item => item.timestamp > String(moment().format("YYYY-MM-DD"))).map(item => item.authorId),
    todayResults: this.props.listings.filter(item => item.timestamp > String(moment().format("YYYY-MM-DD")))
       .map(item => item.authorId).reduce(function (allUsers, user) { 
+
+        //let username = window.helpers.getNameFromId(this.props.users, user);
+        //console.log(username);
+        
         if (user in allUsers) {
           allUsers[user]++;
         }
@@ -47,6 +42,65 @@ class Reports extends Component {
         }
           return allUsers;
         }, {}),
+    weekResults: this.props.listings.filter(item => item.timestamp > String(moment().subtract(7, 'days').format("YYYY-MM-DD")))
+        .map(item => item.authorId).reduce(function (allUsers, user) { 
+  
+          //let username = window.helpers.getNameFromId(this.props.users, user);
+          //console.log(username);
+          
+          if (user in allUsers) {
+            allUsers[user]++;
+          }
+          else {
+            allUsers[user] = 1;
+          }
+            return allUsers;
+          }, {}),
+      monthResults: this.props.listings.filter(item => item.timestamp > String(moment().subtract(30, 'days').format("YYYY-MM-DD")))
+        .map(item => item.authorId).reduce(function (allUsers, user) { 
+  
+          //let username = window.helpers.getNameFromId(this.props.users, user);
+          //console.log(username);
+          
+          if (user in allUsers) {
+            allUsers[user]++;
+          }
+          else {
+            allUsers[user] = 1;
+          }
+            return allUsers;
+          }, {}),
+
+      monthLineal: this.props.listings.filter(item => item.timestamp > String(moment().subtract(30, 'days').format("YYYY-MM-DD")))
+      .map(item => { return ({authorId: item.authorId, timestamp: String(moment(item.timestamp).format("YYYY-MM-DD") )})})
+
+      /*.reduce(function (allUsers, item){
+        
+        if (allUsers.filter(itemFilter => item.authorId === itemFilter.authorId)) {
+          allUsers[item] = allUsers[item].concat(item.timestamp);
+        }
+        else {
+          allUsers[item] = [item.timestamp]
+        }
+
+        return allUsers;
+
+      } , {})*/
+      
+      /*.map(item => item.authorId).reduce(function (allUsers, user) { 
+
+        //let username = window.helpers.getNameFromId(this.props.users, user);
+        //console.log(username);
+        
+        if (user in allUsers) {
+          allUsers[user]++;
+        }
+        else {
+          allUsers[user] = 1;
+        }
+          return allUsers;
+        }, {}),*/
+  
   }
 
   /*componentDidMount(){
@@ -130,15 +184,40 @@ class Reports extends Component {
   
   render(){
           
+          function formattedPie(todayResults, listUsers){
+            
+            let newResults = {};
 
+            for (let key in todayResults){
+              
+              let newKey = window.helpers.getNameFromId(listUsers, key);
+
+              newResults[newKey] = todayResults[key]; 
+            
+            }
+
+            console.log(newResults);
+
+            
+            return newResults
+          }
+         
           return (
             <div>
-              <p>Aqui van los Reports</p>
-              <p>Today {String(this.state.currentDate)}</p>
-              <p>Last 30 days: {String(this.state.beforeDate)}</p>
-              <p>
-              { 
-                this.filterList('5', String(moment().format("YYYY-MM-DD")))}</p>
+              <Segment>
+                  <h2>Reports</h2>
+                  <Grid columns={3} stackable>
+                    <Grid.Column>
+                      <PieChart title="Today" legend="bottom" data={formattedPie(this.state.todayResults, this.props.users)} />
+                    </Grid.Column>
+                    <Grid.Column>
+                      <PieChart title="Last 7 Days" legend="bottom" data={formattedPie(this.state.weekResults, this.props.users)} />
+                    </Grid.Column>
+                    <Grid.Column>
+                      <PieChart title="Last 30 Days" legend="bottom" data={formattedPie(this.state.monthResults, this.props.users)} />
+                    </Grid.Column>
+                  </Grid>
+              </Segment>
             </div>
           )
         }
