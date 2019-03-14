@@ -8,7 +8,7 @@ import { userActiveFetchData, listingUpdateDatabase } from '../modules/actions';
 import { connect } from 'react-redux';
 //import Moment from 'react-moment';
 import moment from 'moment';
-import ReactChartkick, { LineChart, PieChart } from 'react-chartkick';
+import ReactChartkick, { AreaChart, LineChart, PieChart, ColumnChart } from 'react-chartkick';
 import Chart from 'chart.js';
 import '../helpers.js';
 
@@ -28,12 +28,10 @@ class Reports extends Component {
     this.props.listings.filter(item => item.timestamp > String(moment().format("YYYY-MM-DD"))).map(item => item.authorId) ),
     */
    today: this.props.listings.filter(item => item.timestamp > String(moment().format("YYYY-MM-DD"))).map(item => item.authorId),
+   
    todayResults: this.props.listings.filter(item => item.timestamp > String(moment().format("YYYY-MM-DD")))
       .map(item => item.authorId).reduce(function (allUsers, user) { 
-
-        //let username = window.helpers.getNameFromId(this.props.users, user);
-        //console.log(username);
-        
+   
         if (user in allUsers) {
           allUsers[user]++;
         }
@@ -42,12 +40,23 @@ class Reports extends Component {
         }
           return allUsers;
         }, {}),
+
+    yesterdayResults: this.props.listings.filter(item => item.timestamp > String(moment().subtract(1, 'days').format("YYYY-MM-DD")) &&
+    item.timestamp < String(moment().format("YYYY-MM-DD")))
+      .map(item => item.authorId).reduce(function (allUsers, user) { 
+
+        if (user in allUsers) {
+          allUsers[user]++;
+        }
+        else {
+          allUsers[user] = 1;
+        }
+          return allUsers;
+        }, {}),
+
     weekResults: this.props.listings.filter(item => item.timestamp > String(moment().subtract(7, 'days').format("YYYY-MM-DD")))
         .map(item => item.authorId).reduce(function (allUsers, user) { 
   
-          //let username = window.helpers.getNameFromId(this.props.users, user);
-          //console.log(username);
-          
           if (user in allUsers) {
             allUsers[user]++;
           }
@@ -59,9 +68,6 @@ class Reports extends Component {
       monthResults: this.props.listings.filter(item => item.timestamp > String(moment().subtract(30, 'days').format("YYYY-MM-DD")))
         .map(item => item.authorId).reduce(function (allUsers, user) { 
   
-          //let username = window.helpers.getNameFromId(this.props.users, user);
-          //console.log(username);
-          
           if (user in allUsers) {
             allUsers[user]++;
           }
@@ -71,9 +77,33 @@ class Reports extends Component {
             return allUsers;
           }, {}),
 
-      monthLineal: this.props.listings.filter(item => item.timestamp > String(moment().subtract(30, 'days').format("YYYY-MM-DD")))
-      .map(item => { return ({authorId: item.authorId, timestamp: String(moment(item.timestamp).format("YYYY-MM-DD") )})})
+      monthLineal: 
+      
+      this.props.users.map(itemUsers => {
+      
+      let allData = 
+        
+      this.props.listings.filter(item => item.timestamp > String(moment().subtract(30, 'days').format("YYYY-MM-DD")) &&
+      item.authorId === itemUsers.id)
+      //.map(item => { return ({authorId: item.authorId, timestamp: String(moment(item.timestamp).format("YYYY-MM-DD") )})})
+      .map(item => String(moment(item.timestamp).format("YYYY-MM-DD") ) ).reduce(function (allTimes, time) { 
+  
+        if (time in allTimes) {
+          allTimes[time]++;
+        }
+        else {
+          allTimes[time] = 1;
+        }
+          return allTimes;
+        }, {})
 
+        return (
+          {"name": itemUsers.username, "data": allData}
+        )
+
+      }),
+  
+      
       /*.reduce(function (allUsers, item){
         
         if (allUsers.filter(itemFilter => item.authorId === itemFilter.authorId)) {
@@ -206,9 +236,12 @@ class Reports extends Component {
             <div>
               <Segment>
                   <h2>Reports</h2>
-                  <Grid columns={3} stackable>
+                  <Grid columns={4} stackable>
                     <Grid.Column>
                       <PieChart title="Today" legend="bottom" data={formattedPie(this.state.todayResults, this.props.users)} />
+                    </Grid.Column>
+                    <Grid.Column>
+                      <PieChart title="Yesterday" legend="bottom" data={formattedPie(this.state.yesterdayResults, this.props.users)} />
                     </Grid.Column>
                     <Grid.Column>
                       <PieChart title="Last 7 Days" legend="bottom" data={formattedPie(this.state.weekResults, this.props.users)} />
@@ -217,6 +250,7 @@ class Reports extends Component {
                       <PieChart title="Last 30 Days" legend="bottom" data={formattedPie(this.state.monthResults, this.props.users)} />
                     </Grid.Column>
                   </Grid>
+                  <AreaChart title="Last 30 Days" data={this.state.monthLineal} legend="bottom" />
               </Segment>
             </div>
           )
