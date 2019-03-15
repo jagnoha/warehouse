@@ -52,8 +52,9 @@ class ProductsFilterByUser extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        filterByMarketplace: state.filterByMarketplace,
+        //filterByMarketplace: state.filterByMarketplace,
         users: state.users,
+        filterByUser: state.filterByUser,
         /*locations: state.locations,
         hasErroredLocations: state.locationsHasErrored,
         isLoadingLocations: state.locationsIsLoading,

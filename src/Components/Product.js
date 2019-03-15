@@ -200,7 +200,11 @@ class Product extends Component {
                     </Table.Cell>
                     
                     
-                    <Table.Cell><div><Moment format="YYYY/MM/DD HH:mm">{this.props.item.timestamp}</Moment></div> <span className='App-secondary-table-title'><Moment format="YYYY/MM/DD HH:mm">{this.props.item.lastModified}</Moment></span></Table.Cell>
+                    <Table.Cell><div><Moment format="YYYY/MM/DD HH:mm">{this.props.item.timestamp}</Moment></div> <span className='App-secondary-table-title'>
+                    
+                    { this.props.item.lastModified ? <Moment format="YYYY/MM/DD HH:mm">{this.props.item.lastModified}</Moment> : <span></span>}
+                    
+                    </span></Table.Cell>
                     
                     
                     
