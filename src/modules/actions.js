@@ -500,6 +500,7 @@ export function getAmazonAsinListAutoparts(sku, partNumbers, brand, brandList, a
         //console.log(response.data);
         console.log("Brand: " + brand + " | PartNumber: " + partNumbers);
         console.log(query);
+        //console.log(response);
 
         if (response.data){
 

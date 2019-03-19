@@ -44,6 +44,13 @@ class ProductsFilterByStatus extends Component {
               />
               <Form.Field
                 control={Radio}
+                label='Online No Amazon'
+                value='onlineNoAmazon'
+                checked={this.props.filterByStatus === 'onlineNoAmazon'}
+                onChange={this.handleChange}            
+              />
+              <Form.Field
+                control={Radio}
                 label='Out of Stock'
                 value='outofstock'
                 checked={this.props.filterByStatus === 'outofstock'}

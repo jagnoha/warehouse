@@ -39,6 +39,9 @@ class ProductsDashboardPagination extends Component {
       }*/
       if (statusFilterActive === 'online'){
         return list.filter(item => item.status === 'online')
+      } else if (statusFilterActive === 'onlineNoAmazon'){
+        return list.filter(item => item.status === 'online' && !item.asin && !item.title.toUpperCase().includes('LOT OF') && 
+        !item.title.toUpperCase().includes('*'))
       } else if (statusFilterActive === 'outofstock'){
         return list.filter(item => item.status === 'offline' && item.quantity === 0)
       } else if (statusFilterActive === 'draft'){
@@ -125,6 +128,8 @@ class ProductsDashboardPagination extends Component {
           activePage={this.props.activePage}
           onPageChange={this.handlePaginationChange}
           totalPages={totalPages}
+          boundaryRange={3}
+          siblingRange={3}
         />
         <ProductsByPageSelector />
         
