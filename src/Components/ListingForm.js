@@ -325,10 +325,14 @@ class ListingForm extends Component {
                 }
             )
 
+            
+
             let tempFields = { ...this.state.fields, 
                 ['conditionDescription']: this.state.fields.condition !== '0' ? [this.state.fields.conditionDescription] : [],
                 ['pictures']: this.state.pictures.map(item => item),                                            
             };
+
+            console.log(tempFields);
 
             let listingsTemp = this.props.listings.map(item => { if (item.sku === this.props.item.sku) { return tempFields}  return item })
 

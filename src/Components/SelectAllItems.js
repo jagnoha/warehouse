@@ -31,22 +31,45 @@ class SelectAllItems extends Component {
             }
           }*/
 
-          function checkStatusFilterActive(list, statusFilterActive){
+          function checkStatusFilterActive(list, statusFilterActive, listLocations){
             /*if (statusFilterActive !== 'ALL'){
               return list.filter(item => item.status === statusFilterActive)
             } else {
               return list;
             }*/
             if (statusFilterActive === 'online'){
-              return list.filter(item => item.status === "online")
-            } else if (statusFilterActive === 'draft'){
-              return list.filter(item => item.status === "offline" && item.price === "")
+              return list.filter(item => item.status === 'online')
+            } else if (statusFilterActive === 'onlineNoAmazon'){
+              return list.filter(item => item.status === 'online' && !item.asin && !item.title.toUpperCase().includes('LOT OF') && 
+              !item.title.toUpperCase().includes('*'))
             } else if (statusFilterActive === 'outofstock'){
-              return list.filter(item => item.status === "offline" && item.quantity === 0)
+              return list.filter(item => item.status === 'offline' && item.quantity === 0)
+            } else if (statusFilterActive === 'draft'){
+              return list.filter(item => item.status === 'offline' && Number(item.quantity) > 0)
             } else if (statusFilterActive === 'readytoupload'){
               return list.filter(item => item.status === 'offline' && Number(item.quantity) > 0 && item.price && item.location.length > 0 )
             } else if (statusFilterActive === 'goodtorevise'){
               return list.filter(item => item.status === 'offline' && Number(item.quantity) > 0 && !item.price && item.location.length > 0 )
+            } else if (statusFilterActive === 'readyforebay'){
+              
+               
+              let tempList = (list.filter(item => item.status === 'offline' && Number(item.quantity) > 0 && item.price && 
+              item.location.length > 0)) 
+              
+              
+              return (
+                
+                tempList.filter(item => !isFinite(window.helpers.getLocationFromId(listLocations, item.location[0]))     )
+              
+              )  
+              
+              
+            
+            
+            } else if (statusFilterActive === 'toshelf'){
+              return list.filter(item => item.status === 'offline' && Number(item.quantity) > 0 && item.location.length === 0 )            }
+            else if (statusFilterActive === 'error'){
+              return list.filter(item => item.status === 'error')
             } else {
               return list;
             }
@@ -91,7 +114,8 @@ class SelectAllItems extends Component {
       
         if (data.checked === true){ //|| this.props.productsListGrouped.length < 1){
           console.log("CHECKED");
-          const listingsFilteredResult = checkSearchFilter(checkUsersFilterActive(checkEbayMarketplacesFilterActive(checkStatusFilterActive(checkConditionsFilterActive(this.props.listings,this.props.filterByCondition), this.props.filterByStatus), this.props.filterByMarketplace), this.props.filterByUser),this.props.filterBySearch);
+          //const listingsFilteredResult = checkSearchFilter(checkUsersFilterActive(checkEbayMarketplacesFilterActive(checkStatusFilterActive(checkConditionsFilterActive(this.props.listings,this.props.filterByCondition), this.props.filterByStatus), this.props.filterByMarketplace), this.props.filterByUser),this.props.filterBySearch);
+          const listingsFilteredResult = checkSearchFilter(checkUsersFilterActive(checkEbayMarketplacesFilterActive(checkStatusFilterActive(checkConditionsFilterActive(this.props.listings,this.props.filterByCondition), this.props.filterByStatus, this.props.locations), this.props.filterByMarketplace), this.props.filterByUser),this.props.filterBySearch);
         
           const listingsInPage = listingsFilteredResult.chunk(this.props.productsByPage)[Number(this.props.activePage)-1];
           this.setState({listingsInPage: listingsInPage.length})
@@ -139,6 +163,7 @@ class SelectAllItems extends Component {
           <Table.HeaderCell collapsing>
                     <Checkbox toggle 
                     checked = {isCheckedValue}
+                    disabled = {Number(this.props.listingsFiltered) === 0}
                       //checked={this.props.productsSelected.length === this.props.productsByPage.length ? false : true}
                       onClick={this.toggle}  > /></Checkbox>
           </Table.HeaderCell>
@@ -149,8 +174,8 @@ class SelectAllItems extends Component {
     
 const mapStateToProps = (state) => {
     return {
-        /*locations: state.locations,
-        hasErroredLocations: state.locationsHasErrored,
+        locations: state.locations,
+        /*hasErroredLocations: state.locationsHasErrored,
         isLoadingLocations: state.locationsIsLoading,*/
         /*listings: state.listings,
         clickedColumn: state.clickedColumn,

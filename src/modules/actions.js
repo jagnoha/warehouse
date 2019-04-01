@@ -505,11 +505,22 @@ export function getAmazonAsinListAutoparts(sku, partNumbers, brand, brandList, a
         if (response.data){
 
         //let listingBrand = brandList.filter((item) => item.id === brand)[0].value;
+
+        console.log(response.data);
       
         let listFiltered = response.data.filter(item => {
-            return item.AttributeSets.ItemAttributes.Brand.toUpperCase().includes(listingBrand.toUpperCase()) &&
-            //item.AttributeSets.ItemAttributes.Brand.toUpperCase() === listingBrand.toUpperCase() &&
-            item.AttributeSets.ItemAttributes.PartNumber.toUpperCase() === listingPartNumber.toUpperCase()
+            
+          try{  
+                return item.AttributeSets.ItemAttributes.Brand.toUpperCase().includes(listingBrand.toUpperCase()) && (
+                //item.AttributeSets.ItemAttributes.Brand.toUpperCase() === listingBrand.toUpperCase() &&
+                item.AttributeSets.ItemAttributes.PartNumber.toUpperCase() === listingPartNumber.toUpperCase() || 
+                item.AttributeSets.ItemAttributes.Title.toUpperCase().includes(listingPartNumber.toUpperCase()) )
+            } catch(error){
+                return item.AttributeSets.ItemAttributes.Title.toUpperCase().includes(listingPartNumber.toUpperCase()) &&
+                item.AttributeSets.ItemAttributes.Title.toUpperCase().includes(listingBrand.toUpperCase())
+            }
+        
+        
         })
 
         if (listFiltered.length > 0){
@@ -527,6 +538,21 @@ export function getAmazonAsinListAutoparts(sku, partNumbers, brand, brandList, a
 
             listingsUpdate(newAllListings);
             requestAmazonListing(listFiltered[0].Identifiers.MarketplaceASIN.ASIN, sku);
+        
+        /*} else {
+
+            let tempListing = allListings.filter(item => item.sku === sku);
+            let tempAllListings = allListings.filter(item => item.sku !== sku);
+
+            tempListing[0]['asin'] = '';
+            
+            let newAllListings = tempAllListings.concat(tempListing);
+
+            listingsUpdate(newAllListings);
+         
+          }*/
+
+
         } else {
 
             let tempListing = allListings.filter(item => item.sku === sku);
@@ -540,6 +566,9 @@ export function getAmazonAsinListAutoparts(sku, partNumbers, brand, brandList, a
             requestAmazonListingUPC(sku);
 
           }
+
+
+
         }
     
     
@@ -563,6 +592,8 @@ export function publishAmazonBulk(list, allListings, brandList) {
     return (dispatch) => {
 
     let loadingList = list;
+
+    console.log(loadingList);
     //let errorList = [];
 
     /*let config = {
@@ -576,6 +607,8 @@ export function publishAmazonBulk(list, allListings, brandList) {
         let listingInfo = allListings.filter(listing => {
             return listing.uuid === item
         })
+
+        console.log(listingInfo[0]);
 
         console.log(item);
         
@@ -591,7 +624,7 @@ export function publishAmazonBulk(list, allListings, brandList) {
         
             //dispatch(getAmazonAsinListAutoparts(listingInfo[0].sku, listingInfo[0].partNumbers[0], listingInfo[0].brand, brandList ))
             
-            
+            console.log("RUNNING GETAMAZON ASIN LIST AUTOPARTS");
             getAmazonAsinListAutoparts(listingInfo[0].sku, listingInfo[0].partNumbers[0], listingInfo[0].brand, brandList, allListings )
         }
     
