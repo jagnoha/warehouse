@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import '../App.css';
-import { Pagination } from 'semantic-ui-react';
+import { Pagination, Input, Button } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import { changeActivePage, changeProductsSelected } from '../modules/actions';
 import ProductsByPageSelector from './ProductsByPageSelector';
@@ -9,6 +9,11 @@ import ProductsByPageSelector from './ProductsByPageSelector';
 
 class ProductsDashboardPagination extends Component {
   
+  state = {
+    inputPage: this.props.activePage,
+  }
+  
+
   handlePaginationChange = (e, { activePage } ) => {
     //console.log(activePage);
     /*this.props.store.dispatch({
@@ -18,6 +23,19 @@ class ProductsDashboardPagination extends Component {
     this.props.changeProductsSelected([]);
     this.props.changeActivePage(activePage);
     
+  }
+
+  _onChangePage = (e, target) => {
+    
+    this.setState({
+      inputPage: target.value,
+    })
+  }
+
+  _onFindPage = (e) => {
+    console.log(this.state.inputPage);
+    this.props.changeProductsSelected([]);
+    this.props.changeActivePage(this.state.inputPage);
   }
 
   render () {
@@ -131,6 +149,8 @@ class ProductsDashboardPagination extends Component {
           boundaryRange={3}
           siblingRange={3}
         />
+        <Input placeholder= {this.props.activePage} onChange = {this._onChangePage} value={this.state.inputPage} 
+          action={ <Button color='teal' icon='find' onClick = {this._onFindPage} /> } />
         <ProductsByPageSelector />
         
           
