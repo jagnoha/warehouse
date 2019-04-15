@@ -1015,12 +1015,36 @@ export function listingUpdateDatabase(url, listingDraft, listings) {
     .then((response) => {
 
         dispatch(listingDraftIsLoading(false));
-        dispatch(listingsUpdate(listings));
-        dispatch(listingDraftUpdated(listingDraft));
+        //dispatch(listingsUpdate(listings));
+        //dispatch(listingDraftUpdated(listingDraft));
 
-        return response
+        //response.statusText
+
+        
+        //alert(JSON.stringify(response.body));
+        
+        //console.log("AQUI VA LA RESPUESTA: " + response);
+
+        return response.json();
     
-    }).catch((error) => {
+    })
+    .then((responseData) => {
+
+        /*if (responseData.Ack === "Failure"){
+            alert(JSON.stringify(responseData.$.Errors.ShortMessage));
+        } else {
+            alert(JSON.stringify("Listing Updated!"));
+        }*/
+        if (responseData.Ack === 'Failure') {
+            alert(JSON.stringify(responseData.Errors.ShortMessage));
+        } else {
+            dispatch(listingsUpdate(listings));
+            dispatch(listingDraftUpdated(listingDraft));
+            alert(JSON.stringify("Listing Updated!"));
+        }
+        
+    })
+    .catch((error) => {
       console.error(error);
     });
   }
