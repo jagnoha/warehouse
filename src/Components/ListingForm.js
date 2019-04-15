@@ -610,9 +610,29 @@ class ListingForm extends Component {
                     
                 {   
                     !this.state.fields.hasCompatibility ?
+                    
                     <Input id="compatibilityEbayId" value={this.state.fields.compatibilityEbayId} onChange={this.handleChangeField} placeholder="Compatibility Ebay ID" />
-                    : <Label>Has Compatibility</Label>
+                    
+                    : 
+                    <span>
+                        <Label>Has Compatibility</Label>
+                        <Button
+                            onClick={() => this.setState({
+                                fields: {...this.state.fields, hasCompatibility: false },
+                            })}
+
+                            circular
+
+                            size='small'
+                            
+                            icon='edit'
+
+                            color='blue'
+                        />
+                    </span>
                 }
+
+
                 
                 </Form.Field>
 
