@@ -695,34 +695,74 @@ export function uploadEbayBulk(list, allListings, locations) {
 
         console.log(item);
 
-        let itemInfo = tempListings.filter(itemList => itemList.sku === item)[0];
+        let itemInfo = tempListings.filter(itemList => itemList.uuid === item)[0];
+
+        //console.log(JSON.stringify(itemInfo));
         
+        
+
         try {
         
         itemInfo = {...itemInfo, ['locationValues']: itemInfo.location.map(itemLocation => window.helpers.getLocationFromId(locations, itemLocation))}
-
-
-        /*listingCreateEbay(urlbase + '/updatedraftlisting/' + itemInfo.sku + '/' + 
-        encodeURIComponent(JSON.stringify(itemInfo)), 
         
-        urlbase + '/createlistingebay/' + itemInfo.sku + '/' + 
-        encodeURIComponent(JSON.stringify(itemInfo)), itemInfo, tempListings);*/
+        console.log(JSON.stringify(itemInfo));
+        
+        
 
-        /*simpleListingCreateEbay(urlbase + '/createlistingebay/' + itemInfo.sku + '/' + 
-        encodeURIComponent(JSON.stringify(itemInfo)), tempListings);*/
-
+        
 
         if (!itemInfo.itemId) {
+            let config = {
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                }
+            }
         
         axios.get(urlbase + '/createlistingebay/' + itemInfo.sku + '/' + 
         encodeURIComponent(JSON.stringify(itemInfo)), config)
         .then(response => {
                         
-            console.log(response);
-        
+            //alert(JSON.stringify(response));
+            //console.log(response.data);
+            return response;
+            //return response.data.json();
+
+        }).then(responseData => {
+            
+            if (responseData.data.Ack === "Failure"){
+
+                //console.log(item);
+                
+                //console.log()
+
+                //alert(JSON.stringify(responseData.data.Errors[0].ShortMessage));
+          
+
+                let tempListings = totalListings.filter(itemTemp => itemTemp.sku !== item );
+
+                let finalListings = tempListings.concat( allListings.filter(itemTemp => itemTemp.sku === item ) );
+
+                dispatch(listingsUpdate(finalListings));
+
+                //alert(JSON.stringify(responseData.data.Errors.map(item => item)[0]));
+                
+                alert(
+                    "Error in Product: " + itemInfo.title + '\n' + "Error Message: " + 
+                    JSON.stringify(  
+                    Array.isArray(responseData.data.Errors) ? responseData.data.Errors[0].ShortMessage : responseData.data.Errors.ShortMessage
+                ));
+            }
+            
+            //console.log(responseData.data.Ack);
+            //alert(JSON.stringify(responseData));
         })
 
         } else {
+            let config = {
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                }
+            }
             axios.get(urlbase + '/relist/' + itemInfo.sku + '/' + 
             encodeURIComponent(JSON.stringify(itemInfo)), config)
             .then(response => {
@@ -731,7 +771,7 @@ export function uploadEbayBulk(list, allListings, locations) {
         
             })
         }
-
+    
     } catch(error){
         console.log(error);
     }
@@ -938,13 +978,19 @@ export function listingDraftDeleteDatabase(url, listings) {
         }
     })
     .then((response) => {
-
         dispatch(listingDraftIsLoading(false));
+        return response.json();
+    })
+    .then((responseData) => {
 
-        dispatch(listingsUpdate(listings));
+        if (responseData.ok === 0){
+            alert("Error deleting Product!")
         
-        return response
-    
+        } else {
+            alert("Product Deleted!")
+            dispatch(listingsUpdate(listings));
+        }
+  
     }).catch((error) => {
       console.error(error);
     });
@@ -965,10 +1011,26 @@ export function listingDraftUpdateDatabase(url, listingDraft, listings) {
     .then((response) => {
 
         dispatch(listingDraftIsLoading(false));
-        dispatch(listingsUpdate(listings));
-        dispatch(listingDraftUpdated(listingDraft));
+        
+        return response.json();
 
-        return response
+    }).then((responseData) => {
+
+        //alert(responseData);
+
+        if (responseData.ok === 1) {
+            
+            dispatch(listingsUpdate(listings));
+            dispatch(listingDraftUpdated(listingDraft));
+            
+            alert( listingDraft.title + '\n' + "Updated!");
+            
+
+        } else {
+            alert("Error updating this item, try again!");
+        }
+        
+        //return response
     
     }).catch((error) => {
       console.error(error);
@@ -991,11 +1053,32 @@ export function listingDeleteDatabase(url, listings) {
 
         dispatch(listingDraftIsLoading(false));
 
-        dispatch(listingsUpdate(listings));
+        //dispatch(listingsUpdate(listings));
         
-        return response
+        return response.json();
     
-    }).catch((error) => {
+    })
+    .then((responseData) => {
+        
+        if (responseData.result !== "Deleted"){
+            alert(
+                "Error deleting Product!"
+            );
+            
+        } else {
+            dispatch(listingsUpdate(listings));
+            alert(
+                "Product Deleted!"
+            );
+
+        }
+        
+        
+
+        
+
+    })
+    .catch((error) => {
       console.error(error);
     });
   }
@@ -1036,11 +1119,21 @@ export function listingUpdateDatabase(url, listingDraft, listings) {
             alert(JSON.stringify("Listing Updated!"));
         }*/
         if (responseData.Ack === 'Failure') {
-            alert(JSON.stringify(responseData.Errors.ShortMessage));
+            //alert(JSON.stringify(responseData.Errors.ShortMessage));
+
+            alert(
+                "Error in Product: " + listingDraft.title + '\n' + "Error Message: " + 
+                JSON.stringify(  
+                Array.isArray(responseData.data.Errors) ? responseData.data.Errors[0].ShortMessage : responseData.data.Errors.ShortMessage
+            ));
+
+            
+
+
         } else {
             dispatch(listingsUpdate(listings));
             dispatch(listingDraftUpdated(listingDraft));
-            alert(JSON.stringify("Listing Updated!"));
+            alert(JSON.stringify(listingDraft.title + " " + " Updated!"));
         }
         
     })
@@ -1088,11 +1181,46 @@ export function listingCreateEbay(urlUpdate, urlCreate, listingDraft, listings) 
     .then((response) => {
 
         dispatch(listingDraftIsLoading(false));
-        dispatch(listingsUpdate(listings));
+        //dispatch(listingsUpdate(listings));
         //dispatch(listingDraftUpdated(listingDraft));
 
-        return response
+        //response.statusText
+
+        
+        //alert(JSON.stringify(response.body));
+        
+        //console.log("AQUI VA LA RESPUESTA: " + response);
+
+        return response.json();
     
+    })
+    .then((responseData) => {
+
+        /*if (responseData.Ack === "Failure"){
+            alert(JSON.stringify(responseData.$.Errors.ShortMessage));
+        } else {
+            alert(JSON.stringify("Listing Updated!"));
+        }*/
+        if (responseData.Ack === 'Failure') {
+            //alert(JSON.stringify(responseData.Errors.ShortMessage));
+
+            console.log("ERRRORRRRR");
+
+            alert(
+                "Error in Product: " + listingDraft.title + '\n' + "Error Message: " + 
+                JSON.stringify(  
+                Array.isArray(responseData.Errors) ? responseData.Errors[0].ShortMessage : responseData.Errors.ShortMessage
+            ));
+
+            
+
+
+        } else {
+            dispatch(listingsUpdate(listings));
+            dispatch(listingDraftUpdated(listingDraft));
+            alert(JSON.stringify(listingDraft.title + " " + " Uploaded!"));
+        }
+        
     }).catch((error) => {
       console.error(error);
     });
