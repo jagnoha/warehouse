@@ -536,6 +536,8 @@ class ListingForm extends Component {
                 deletePicture = {this.deletePicture}
                 />
 
+               
+
             
             
             
@@ -553,7 +555,7 @@ class ListingForm extends Component {
             
 
                 
-
+                
 
 
                 <Form.Field>
