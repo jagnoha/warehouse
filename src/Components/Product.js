@@ -10,7 +10,7 @@ import {
  import ImagesLightBoxForm from './ImagesLightBoxForm'
  import { connect } from 'react-redux'
  import '../helpers.js'
- import { changeProductsSelected, listingDraftDeleteDatabase, listingDeleteDatabase } from '../modules/actions'
+ import { changeProductsSelected, listingDraftDeleteDatabase, listingDeleteDatabase, listingCancelEbay } from '../modules/actions'
  //import { BrowserRouter as Router, Route, Redirect, Link } from "react-router-dom";
  import ListingForm from './ListingForm';
  import AmazonTag from './AmazonTag';
@@ -29,6 +29,7 @@ class Product extends Component {
     state = {
         modalOpen: false,
         modalDeleteOpen: false,
+        modalCancelOpen: false,
         //pictures: this.props.item.pictures.map(item => item),
     }
 
@@ -47,6 +48,8 @@ class Product extends Component {
 
     handleDeleteOpen = () => this.setState({ modalDeleteOpen: true })
 
+    handleCancelOpen = () => this.setState({ modalCancelOpen: true })
+
     handleClose = () => { 
         
         this.setState({ modalOpen: false })
@@ -57,6 +60,24 @@ class Product extends Component {
         
         this.setState({ modalDeleteOpen: false })
     
+    }
+
+    handleCancelClose = () => { 
+        
+        this.setState({ modalCancelOpen: false })
+    
+    }
+
+    handleCancelListing = () => {
+
+        let listingTemp = {...this.props.item, status: 'offline', itemId: ''}
+        let listingsTemp = this.props.listings.filter(item => item.sku !== this.props.item.sku);
+        let finalListings = listingsTemp.concat(listingTemp); 
+
+        this.props.listingCancelEbay(this.props.urlBase + '/convertonlineoffline/' + this.props.item.sku, finalListings)
+
+        this.setState({ modalCancelOpen: false, modalOpen: false })
+
     }
 
     handleDeleteListing = () => {
@@ -70,7 +91,7 @@ class Product extends Component {
         } else {
             this.props.listingDeleteDatabase(this.props.urlBase + '/deletelisting/' + this.props.item.sku, listingsTemp )
         }
-        this.setState({ modalDeleteOpen: false })
+        this.setState({ modalDeleteOpen: false, modalOpen: false })
     
     }
     
@@ -234,7 +255,10 @@ class Product extends Component {
                             <ListingForm pictures = {this.state.pictures} handleClose = {this.handleClose} brands = {this.props.brands} 
                             item = {this.props.item} urlBase = {this.props.urlBase} locations = {this.props.locations} 
                             handleDeleteListing = {this.handleDeleteListing} handleDeleteClose = {this.handleDeleteClose} 
-                            modalDeleteOpen = {this.state.modalDeleteOpen} handleDeleteOpen = {this.handleDeleteOpen} />
+                            modalDeleteOpen = {this.state.modalDeleteOpen} handleDeleteOpen = {this.handleDeleteOpen}
+                            modalCancelOpen = {this.state.modalCancelOpen} handleCancelClose = {this.handleCancelClose}
+                            handleCancelOpen = {this.handleCancelOpen} handleCancelListing = {this.handleCancelListing}                           
+                            />
                         </Modal.Content>
                       </Modal>
                       
@@ -368,6 +392,7 @@ const mapStateToProps = (state) => {
         changeProductsSelected: (list) => dispatch(changeProductsSelected(list)),
         listingDraftDeleteDatabase: (url, listings) => dispatch(listingDraftDeleteDatabase(url, listings)),
         listingDeleteDatabase: (url, listings) => dispatch(listingDeleteDatabase(url, listings)),
+        listingCancelEbay: (url, listings) => dispatch(listingCancelEbay(url, listings)),
         
     };
   };

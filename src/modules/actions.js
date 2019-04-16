@@ -1085,6 +1085,52 @@ export function listingDeleteDatabase(url, listings) {
 
 }
 
+export function listingCancelEbay(url, listings) {
+    return (dispatch) => {
+    dispatch(listingDraftIsLoading(true))    
+    fetch(url,{
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            //'Accept': 'application/json',
+            //'Content-Type': 'application/json',
+        }
+    })
+    .then((response) => {
+
+        dispatch(listingDraftIsLoading(false));
+
+        //dispatch(listingsUpdate(listings));
+        
+        return response.json();
+    
+    })
+    .then((responseData) => {
+        
+        if (responseData.ok === 0){
+            alert(
+                "Error converting Product to draft!"
+            );
+            
+        } else {
+            dispatch(listingsUpdate(listings));
+            alert(
+                "Product converted to draft!"
+            );
+
+        }
+        
+        
+
+        
+
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  }
+
+}
+
 export function listingUpdateDatabase(url, listingDraft, listings) {
     return (dispatch) => {
     dispatch(listingDraftIsLoading(true))    

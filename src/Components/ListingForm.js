@@ -786,9 +786,38 @@ class ListingForm extends Component {
                         <Button color="green" onClick = {this.handleSaveFormRelist} >Relist</Button> : <span></span>
                 }
 
-                { (this.state.fields.status === "online" && this.validateFields()) ?
-                    <Button color="green" onClick = {this.handleSaveFormOnline} >Apply Changes</Button> : <span></span>
+                { (this.state.fields.status === "online" && this.validateFields()) &&
+                      <Button color="green" onClick = {this.handleSaveFormOnline} >Apply Changes</Button> 
                 }
+
+                { (this.state.fields.status === "online" && this.validateFields()) &&                
+
+                <Modal 
+                        trigger={<Button color ="yellow" onClick = {this.props.handleCancelOpen}>Convert to Draft</Button>}
+                        open={this.props.modalCancelOpen}
+                        onClose={this.props.handleCancelClose}
+                        closeOnEscape={false}
+                        closeOnDimmerClick={false}
+                      >
+                      <Header icon='hand point down outline' content='Convert this item to draft again' />
+                      <Modal.Content>
+                          <h3>Do you want to convert "{this.props.item.title}" to draft again</h3>
+                      </Modal.Content>
+
+                      <Modal.Actions>
+                        <Button onClick = {this.props.handleCancelClose} color='red'>
+                            <Icon name='remove' /> No
+                        </Button>
+                        <Button onClick = {this.props.handleCancelListing} color='green'>
+                            <Icon name='checkmark' /> Yes
+                        </Button>
+                      </Modal.Actions>
+
+                </Modal>
+
+                }
+
+
 
                 <Modal 
                         trigger={<Button color ="red" onClick = {this.props.handleDeleteOpen}>Delete</Button>}
@@ -806,7 +835,7 @@ class ListingForm extends Component {
                         <Button onClick = {this.props.handleDeleteClose} color='red'>
                             <Icon name='remove' /> No
                         </Button>
-                        <Button onClick = {this.props.handleDeleteClose} color='green'>
+                        <Button onClick = {this.props.handleDeleteListing} color='green'>
                             <Icon name='checkmark' /> Yes
                         </Button>
                       </Modal.Actions>
