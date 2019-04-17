@@ -1287,12 +1287,23 @@ export function listingRelistEbay(urlUpdate, urlRelist, listingDraft, listings) 
     .then((response) => {
 
         dispatch(listingDraftIsLoading(false));
-        dispatch(listingsUpdate(listings));
+        //dispatch(listingsUpdate(listings));
         //dispatch(listingDraftUpdated(listingDraft));
 
-        return response
+        return response.json();
     
-    }).catch((error) => {
+    })
+    .then((responseData)=>{
+        
+        if (responseData.ok === 1){
+            dispatch(listingsUpdate(listings));
+            alert("Item Relisted!");
+        } else {
+            alert("Error relisting Item!");
+        }
+        
+    })    
+    .catch((error) => {
       console.error(error);
     });
   }
