@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import '../App.css';
 import '../helpers.js';
 import { 
-    Button, Form, Input, TextArea, Grid, Header, Image, 
+    Button, Form, Input, TextArea, Grid, Header, Image, Message, 
     Menu, Label, Segment, Dropdown, Icon, Checkbox, Modal } from 'semantic-ui-react';
 import ImagesLightBoxForm from './ImagesLightBoxForm'
 import { connect } from 'react-redux';
@@ -429,6 +429,30 @@ class ListingForm extends Component {
             console.log(this.pond);
         }
 
+        errorMessage = () => {
+            if (this.state.fields.weightUnit === 'lbs' && Number(this.state.fields.weight) > 2 && this.state.fields.domestic === '0'){
+                return "domesticError"
+            }
+
+            if (this.state.fields.weightUnit === 'oz' && Number(this.state.fields.weight) > 16 && this.state.fields.domestic === '0'){
+                return "domesticError"
+            }
+
+            if (this.state.fields.weightUnit === 'lbs' && Number(this.state.fields.weight) > 70 && this.state.fields.domestic === '1'){
+                return "domesticError"
+            }
+
+            if (this.state.fields.weightUnit === 'lbs' && Number(this.state.fields.weight) > 150 && this.state.fields.domestic === '5'){
+                return "domesticError"
+            }
+
+            if (this.state.fields.weightUnit === 'lbs' && Number(this.state.fields.weight) > 150 && this.state.fields.domestic === '2'){
+                return "domesticError"
+            }
+
+            return ""
+        }
+
         validateFields = () => {
             if (Number(this.state.fields.quantity) < 1){
                 return false
@@ -455,6 +479,26 @@ class ListingForm extends Component {
             }
 
             if (this.state.pictures.length === 0){
+                return false
+            }
+
+            if (this.state.fields.weightUnit === 'lbs' && Number(this.state.fields.weight) > 1 && this.state.fields.domestic === '0'){
+                return false
+            }
+
+            if (this.state.fields.weightUnit === 'oz' && Number(this.state.fields.weight) > 16 && this.state.fields.domestic === '0'){
+                return false
+            }
+
+            if (this.state.fields.weightUnit === 'lbs' && Number(this.state.fields.weight) > 70 && this.state.fields.domestic === '1'){
+                return false
+            }
+
+            if (this.state.fields.weightUnit === 'lbs' && Number(this.state.fields.weight) > 150 && this.state.fields.domestic === '5'){
+                return false
+            }
+
+            if (this.state.fields.weightUnit === 'lbs' && Number(this.state.fields.weight) > 150 && this.state.fields.domestic === '2'){
                 return false
             }
 
@@ -524,6 +568,8 @@ class ListingForm extends Component {
             
             
             <Form>
+
+                <p>{JSON.stringify(this.state.fields)}</p>
 
                 <Image.Group>
 
@@ -677,6 +723,14 @@ class ListingForm extends Component {
                     <label>Description</label>
                     <TextArea id="description" value={this.state.fields.description} onChange={this.handleChangeField} />
                 </Form.Field>
+                
+                { (this.errorMessage() === "domesticError") && 
+                    <Message negative>
+                        <Message.Header>Domestic Shipping Service Error!</Message.Header>
+                        <p>Change Physical Information or Domestic Shipping Service</p>
+                    </Message>
+                }
+                
 
                 <Form.Field>
                     <label>Domestic Shipping</label>
