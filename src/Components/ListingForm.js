@@ -452,6 +452,10 @@ class ListingForm extends Component {
             if (Number(this.state.fields.price) <= 0){
                 return 'priceError'
             }
+
+            if (this.state.fields.location.length === 0){
+                return 'locationError'
+            }
             
             if (this.state.fields.weightUnit === 'lbs' && Number(this.state.fields.weight) > 2 && this.state.fields.domestic === '0'){
                 return "domesticError"
@@ -847,7 +851,12 @@ class ListingForm extends Component {
                     </Form.Field> : <span></span>
                 }           
 
-                
+                { (this.errorMessage() === "locationError") && 
+                    <Message negative>
+                        <Message.Header>Missing Location!</Message.Header>
+                        <p>Don't forget to add at least one Location</p>
+                    </Message>
+                }   
                 <Form.Field>
                 <label>Locations</label>
                     <Dropdown id="locations" /*value={   this.state.fields.partNumbers.map(item => ({value: item, text: item})) }*/
