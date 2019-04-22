@@ -431,16 +431,26 @@ class ListingForm extends Component {
 
         errorMessage = () => {
 
-            if (Number(this.state.fields.quantity) < 1){
-                return "quantityError"
+                   
+            
+            if (this.state.fields.partNumbers.length === 0){
+                return "partnumbersError"
             }
 
             if (!this.state.fields.brand){
                 return "brandError"
             }
+
+            if (Number(this.state.fields.quantity) < 1){
+                return "quantityError"
+            }
             
-            if (this.state.fields.partNumbers.length === 0){
-                return "partnumbersError"
+            if (this.state.fields.title.length <= 0){
+                return "titleError"
+            }
+
+            if (Number(this.state.fields.price) <= 0){
+                return 'priceError'
             }
             
             if (this.state.fields.weightUnit === 'lbs' && Number(this.state.fields.weight) > 2 && this.state.fields.domestic === '0'){
@@ -467,6 +477,11 @@ class ListingForm extends Component {
         }
 
         validateFields = () => {
+
+            if (this.state.pictures.length === 0){
+                return false
+            }
+
             if (Number(this.state.fields.quantity) < 1){
                 return false
             }
@@ -490,10 +505,7 @@ class ListingForm extends Component {
             if (this.state.fields.location.length === 0){
                 return false
             }
-
-            if (this.state.pictures.length === 0){
-                return false
-            }
+            
 
             if (this.state.fields.weightUnit === 'lbs' && Number(this.state.fields.weight) > 1 && this.state.fields.domestic === '0'){
                 return false
@@ -668,7 +680,12 @@ class ListingForm extends Component {
                 </Form.Field>
 
                 
-                
+                { (this.errorMessage() === "titleError") && 
+                    <Message negative>
+                        <Message.Header>Missing Title!</Message.Header>
+                        <p>Title can't be empty</p>
+                    </Message>
+                }
                 <Form.Field>
                     <label>Title</label>
                     <Input id="title" value={this.state.fields.title} onChange={this.handleChangeField} placeholder="Title" />
@@ -728,13 +745,20 @@ class ListingForm extends Component {
                 { (this.errorMessage() === "quantityError") && 
                     <Message negative>
                         <Message.Header>Quantity Error!</Message.Header>
-                        <p>Quantity must be more than 0</p>
+                        <p>Quantity must be greater than 0</p>
                     </Message>
                 }   
                 <Form.Field>
                     <label>Quantity</label>
                     <Input type="number" id="quantity" value={this.state.fields.quantity} onChange={this.handleChangeField} />
                 </Form.Field>
+
+                { (this.errorMessage() === "priceError") && 
+                    <Message negative>
+                        <Message.Header>Price Error!</Message.Header>
+                        <p>Price must be greater than 0</p>
+                    </Message>
+                }   
 
                 <Form.Field>
                     <label>Price</label>
