@@ -430,6 +430,15 @@ class ListingForm extends Component {
         }
 
         errorMessage = () => {
+
+            if (Number(this.state.fields.quantity) < 1){
+                return "quantityError"
+            }
+            
+            if (this.state.fields.partNumbers.length === 0){
+                return "partnumbersError"
+            }
+            
             if (this.state.fields.weightUnit === 'lbs' && Number(this.state.fields.weight) > 2 && this.state.fields.domestic === '0'){
                 return "domesticError"
             }
@@ -448,7 +457,7 @@ class ListingForm extends Component {
 
             if (this.state.fields.weightUnit === 'lbs' && Number(this.state.fields.weight) > 150 && this.state.fields.domestic === '2'){
                 return "domesticError"
-            }
+            }            
 
             return ""
         }
@@ -600,7 +609,12 @@ class ListingForm extends Component {
 
                 
                 
-
+                { (this.errorMessage() === "partnumbersError") && 
+                    <Message negative>
+                        <Message.Header>Missing Part Number!</Message.Header>
+                        <p>Add at least one part number</p>
+                    </Message>
+                }
 
                 <Form.Field>
                     <label>Part Numbers</label>
@@ -701,7 +715,12 @@ class ListingForm extends Component {
                     <label>UPC</label>
                     <Input id="upc" value={this.state.fields.upc} onChange={this.handleChangeField} placeholder="UPC" />
                 </Form.Field>*/}
-
+                { (this.errorMessage() === "quantityError") && 
+                    <Message negative>
+                        <Message.Header>Quantity Error!</Message.Header>
+                        <p>Quantity must be more than 0</p>
+                    </Message>
+                }   
                 <Form.Field>
                     <label>Quantity</label>
                     <Input type="number" id="quantity" value={this.state.fields.quantity} onChange={this.handleChangeField} />
