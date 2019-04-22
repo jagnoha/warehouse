@@ -746,10 +746,19 @@ export function uploadEbayBulk(list, allListings, locations) {
 
                 //alert(JSON.stringify(responseData.data.Errors.map(item => item)[0]));
                 
-                alert(
+                /*alert(
                     "Error in Product: " + itemInfo.title + '\n' + "Error Message: " + 
                     JSON.stringify(  
                     Array.isArray(responseData.data.Errors) ? responseData.data.Errors[0].ShortMessage : responseData.data.Errors.ShortMessage
+                ));*/
+
+                alert(
+                    "Error in Product: " + itemInfo.title + '\n' + "Error Message: " + 
+                    JSON.stringify(  
+                        Array.isArray(responseData.data.Errors) ? 
+                            responseData.data.Errors.filter(item => item.SeverityCode === 'Error')[0].ShortMessage
+                                : 
+                            responseData.data.Errors.ShortMessage
                 ));
             }
             
@@ -1170,8 +1179,20 @@ export function listingUpdateDatabase(url, listingDraft, listings) {
             alert(
                 "Error in Product: " + listingDraft.title + '\n' + "Error Message: " + 
                 JSON.stringify(  
-                Array.isArray(responseData.data.Errors) ? responseData.data.Errors[0].ShortMessage : responseData.data.Errors.ShortMessage
+                    Array.isArray(responseData.data.Errors) ? 
+                        responseData.data.Errors.filter(item => item.SeverityCode === 'Error')[0].ShortMessage
+                            : 
+                        responseData.data.Errors.ShortMessage
             ));
+
+            /*alert(
+                "Error in Product: " + listingDraft.title + '\n' + "Error Message: " + 
+                JSON.stringify(  
+                    Array.isArray(responseData.data.Errors) ? 
+                        responseData.data.Errors[0].ShortMessage 
+                            : 
+                        responseData.data.Errors.ShortMessage
+            ));*/
 
             
 
@@ -1252,10 +1273,19 @@ export function listingCreateEbay(urlUpdate, urlCreate, listingDraft, listings) 
 
             console.log("ERRRORRRRR");
 
-            alert(
+            /*alert(
                 "Error in Product: " + listingDraft.title + '\n' + "Error Message: " + 
                 JSON.stringify(  
                 Array.isArray(responseData.Errors) ? responseData.Errors[0].ShortMessage : responseData.Errors.ShortMessage
+            ));*/
+
+            alert(
+                "Error in Product: " + listingDraft.title + '\n' + "Error Message: " + 
+                JSON.stringify(  
+                    Array.isArray(responseData.Errors) ? 
+                        responseData.Errors.filter(item => item.SeverityCode === 'Error')[0].ShortMessage
+                            : 
+                        responseData.Errors.ShortMessage
             ));
 
             
