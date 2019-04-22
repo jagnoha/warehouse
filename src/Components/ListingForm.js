@@ -434,6 +434,10 @@ class ListingForm extends Component {
             if (Number(this.state.fields.quantity) < 1){
                 return "quantityError"
             }
+
+            if (!this.state.fields.brand){
+                return "brandError"
+            }
             
             if (this.state.fields.partNumbers.length === 0){
                 return "partnumbersError"
@@ -636,6 +640,12 @@ class ListingForm extends Component {
                         />
                     
                 </Form.Field>
+                { (this.errorMessage() === "brandError") && 
+                    <Message negative>
+                        <Message.Header>Missing Brand!</Message.Header>
+                        <p>Brand is mandatory</p>
+                    </Message>
+                }
 
                 <Form.Field>
                     <label>Brand</label>
