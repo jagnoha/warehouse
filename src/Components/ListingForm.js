@@ -569,8 +569,6 @@ class ListingForm extends Component {
             
             <Form>
 
-                <p>{JSON.stringify(this.state.fields)}</p>
-
                 <Image.Group>
 
                        
@@ -828,8 +826,8 @@ class ListingForm extends Component {
                 : <span></span>
                 }
 
-                { this.state.fields.status === "offline" ?
-                   <Button color="blue" onClick = {this.handleSaveForm} >Save as Draft</Button> : <span></span>
+                { this.state.fields.status === "offline" && this.validateFields() &&
+                   <Button color="blue" onClick = {this.handleSaveForm} >Save as Draft</Button>
                 }
 
                 { (this.state.fields.status === "offline" && this.validateFields() && !this.props.item.itemId) ? 
