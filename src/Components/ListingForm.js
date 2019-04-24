@@ -748,7 +748,7 @@ class ListingForm extends Component {
                 </Form.Field>*/}
                 { (this.errorMessage() === "quantityError") && 
                     <Message negative>
-                        <Message.Header>Quantity Error!</Message.Header>
+                        <Message.Header>Missing Quantity!</Message.Header>
                         <p>Quantity must be greater than 0</p>
                     </Message>
                 }   
@@ -759,7 +759,7 @@ class ListingForm extends Component {
 
                 { (this.errorMessage() === "priceError") && 
                     <Message negative>
-                        <Message.Header>Price Error!</Message.Header>
+                        <Message.Header>Missing Price!</Message.Header>
                         <p>Price must be greater than 0</p>
                     </Message>
                 }   
@@ -888,7 +888,7 @@ class ListingForm extends Component {
                 : <span></span>
                 }
 
-                { this.state.fields.status === "offline" && this.validateFields() &&
+                { this.state.fields.status === "offline" && 
                    <Button color="blue" onClick = {this.handleSaveForm} >Save as Draft</Button>
                 }
 
