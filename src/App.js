@@ -44,7 +44,7 @@ class App extends React.PureComponent {
     this.props.fetchListings(this.props.urlBase+'/getlistings', this.props.clickedColumn, this.props.direction === 'ascending' ? 'asc' : 'desc' );
     this.props.amazonPdfFileFetchCurrentData(this.props.urlBase+'/getamazonpdffile');
 
-    setInterval(this.loadInformationFromServer, 60000);
+    setInterval(this.loadInformationFromServer, 180000);
   }
 
   //componentDidMount(){
