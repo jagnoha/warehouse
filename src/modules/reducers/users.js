@@ -34,6 +34,12 @@ export function users(state = [
         username: 'jordan',
         password: 'jordan',
         group: '2',
+      },
+      {
+        id: '6',
+        username: 'uri',
+        password: 'uri',
+        group: '2',
       }
 ]) {
     return state
