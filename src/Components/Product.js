@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import ProductInfo from './ProductInfo'
 import { 
-    Button, Label, Table, Header, Image, Grid, Checkbox, Icon, Modal, 
+    Button, Label, Grid, Table, Header, Image, Checkbox, Input, Icon, Modal, 
  } from 'semantic-ui-react'
 
  import Price from './Price'
@@ -10,7 +10,7 @@ import {
  import ImagesLightBoxForm from './ImagesLightBoxForm'
  import { connect } from 'react-redux'
  import '../helpers.js'
- import { changeProductsSelected, listingDraftDeleteDatabase, listingDeleteDatabase, listingCancelEbay } from '../modules/actions'
+ import { changeProductsSelected, listingDraftDeleteDatabase, listingsUpdate, listingDeleteDatabase, listingCancelEbay } from '../modules/actions'
  //import { BrowserRouter as Router, Route, Redirect, Link } from "react-router-dom";
  import ListingForm from './ListingForm';
  import AmazonTag from './AmazonTag';
@@ -20,16 +20,38 @@ import {
  import ImageList from './ImageList';
  import Moment from 'react-moment';
  import 'moment-timezone';
+ import axios from 'axios';
 
  //const urlbase = 'http://10.0.0.216:8083';
  //const urlbase = 'http://192.168.1.11:8083';
 //const Product = (key, item, locationsItem, brandItem, userListItem, conditionItem, ebayMarketplaceItem ) => (
+
+    function getConditionCode(condition){
+        if (Number(condition) > 1){
+          return "used"
+        } else {
+          return "new"
+        }
+      }
+
+      function conditionEbayQuery(condition){
+        if (Number(condition) > 1){
+          return "2"
+        } else {
+          return "1"
+        }
+      }
+
 class Product extends Component {
     
     state = {
         modalOpen: false,
         modalDeleteOpen: false,
         modalCancelOpen: false,
+        modalPriceOpen: false,
+        lowerPriceItem: null,
+        priceItem: null,
+        fullItem: null,
         //pictures: this.props.item.pictures.map(item => item),
     }
 
@@ -50,6 +72,73 @@ class Product extends Component {
 
     handleCancelOpen = () => this.setState({ modalCancelOpen: true })
 
+    handlePriceOpen = () => {
+        this.setState({ modalPriceOpen: true })
+
+        let config = {
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+            }
+          }
+
+        axios.get(`https://29508158.ngrok.io/ebaysearch/${this.props.item.partNumbers[0]}/33021/${getConditionCode(this.props.item.condition)}`, config)          
+        .then(response => {
+      
+            this.setState({
+                lowerPriceItem: response.data,
+                priceItem: {
+                    sku: this.props.item.sku,
+                    itemId: this.props.item.itemId,
+                    pictures: this.props.item.pictures,
+                    title: this.props.item.title,
+                    price: this.props.item.price,
+                    condition: this.props.item.condition,
+                },
+                fullItem: this.props.item,
+            })
+                        
+
+        }).catch(error => {
+                alert(error);
+            }
+        );
+
+    }
+
+    checkQuantity = (quantity) => {
+        if (Number(quantity) < 0) {
+            return false;
+        }
+
+        return true;
+    }
+
+    handleChangeField = (e, data) => {
+            
+        let doChange = true;
+
+        switch(data.id){
+            //case "title":
+            //    doChange = this.checkSizeTitle(data.value);
+            //    break;
+            //case "quantity":
+            case "price":    
+                doChange = this.checkQuantity(data.value);
+                break;
+
+        }
+
+        //console.log(data);
+        
+        if (doChange){
+            this.setState({
+                priceItem: {...this.state.priceItem, [data.id]: data.value}
+            })
+        }
+    
+    }
+
+
     handleClose = () => { 
         
         this.setState({ modalOpen: false })
@@ -60,6 +149,10 @@ class Product extends Component {
         
         this.setState({ modalDeleteOpen: false })
     
+    }
+
+    handlePriceClose = () => {
+        this.setState({ modalPriceOpen: false, lowerPriceItem: null, priceItem: null, fullItem: null })
     }
 
     handleCancelClose = () => { 
@@ -92,6 +185,142 @@ class Product extends Component {
             this.props.listingDeleteDatabase(this.props.urlBase + '/deletelisting/' + this.props.item.sku, listingsTemp )
         }
         this.setState({ modalDeleteOpen: false, modalOpen: false })
+    
+    }
+
+    handleDismissForeverPriceListing = () => {
+        
+        this.setState({
+            lowerPriceItem: null,
+        })
+        
+        axios.get(`https://29508158.ngrok.io/dismisspricereviseforever/${this.state.priceItem.sku}`)
+        .then(response => {
+            
+            
+
+            let listingsTemp = this.props.listings.filter(item => item.sku !== this.state.priceItem.sku);
+            let newItem = {...this.state.fullItem, ['checkPrice']:false}
+            let listingsNew = [...listingsTemp, newItem]     
+
+            //this.props.listingsUpdate(listingsNew);
+            this.props.listingsUpdate(listingsNew);
+
+            this.setState(
+                { 
+                    modalPriceOpen: false, 
+                    lowerPriceItem: null, 
+                    priceItem: null,
+                    fullItem: null,
+                }
+            )
+
+            //alert(JSON.stringify(response.data));
+                        
+
+        }).catch(error => {
+            
+                this.setState(
+                    { 
+                        modalPriceOpen: false, 
+                        lowerPriceItem: null, 
+                        priceItem: null,
+                        fullItem: null, 
+                    }
+                )
+                alert(JSON.stringify(error));
+            }
+        );
+    
+    
+    }
+
+    handleDismissPriceListing = () => {
+        
+        this.setState({
+            lowerPriceItem: null,
+        })
+        
+        axios.get(`https://29508158.ngrok.io/dismisspricerevise/${this.state.priceItem.sku}`)
+        .then(response => {            
+            
+
+            let listingsTemp = this.props.listings.filter(item => item.sku !== this.state.priceItem.sku);
+            let newItem = {...this.state.fullItem, ['checkPrice']:null}
+            let listingsNew = [...listingsTemp, newItem]  
+            
+            this.props.listingsUpdate(listingsNew);
+
+            this.setState(
+                { 
+                    modalPriceOpen: false, 
+                    lowerPriceItem: null, 
+                    priceItem: null,
+                    fullItem: null,
+                }
+            )
+
+            //alert(JSON.stringify(response.data));
+                        
+
+        }).catch(error => {
+            
+                this.setState(
+                    { 
+                        modalPriceOpen: false, 
+                        lowerPriceItem: null, 
+                        priceItem: null,
+                        fullItem: null, 
+                    }
+                )
+                alert(JSON.stringify(error));
+            }
+        );
+    
+    
+    }
+
+    handlePriceListing = () => {
+        
+        this.setState({
+            lowerPriceItem: null,
+        })
+
+        console.log(this.state.priceItem.price);
+        
+        axios.get(`https://29508158.ngrok.io/updatepriceonebay/${this.state.priceItem.sku}/${this.state.priceItem.itemId}/${this.state.priceItem.price}`)
+        .then(response => {
+            
+            let listingsTemp = this.props.listings.filter(item => item.sku !== this.state.priceItem.sku);
+            let newItem = {...this.state.fullItem, ['checkPrice']:null, ['price']: this.state.priceItem.price}
+            let listingsNew = [...listingsTemp, newItem]  
+            
+            this.props.listingsUpdate(listingsNew);
+
+            this.setState(
+                { 
+                    modalPriceOpen: false, 
+                    lowerPriceItem: null, 
+                    priceItem: null,
+                    fullItem: null,
+                }
+            )
+                        
+
+        }).catch(error => {
+            
+                this.setState(
+                    { 
+                        modalPriceOpen: false, 
+                        lowerPriceItem: null, 
+                        priceItem: null,
+                        fullItem: null, 
+                    }
+                )
+                alert(JSON.stringify(error));
+            }
+        );
+    
     
     }
     
@@ -217,6 +446,83 @@ class Product extends Component {
                     </Table.Cell>
                     <Table.Cell>
                         <Price price = {this.props.item.price} />
+                        
+                        { (this.props.item.checkPrice === true && this.props.item.status === "online" && this.props.picturesIsLoading.filter(item => item === this.props.item.uuid).length === 0 && this.props.item.pictures !== 'PENDING') ?  <span>
+                        <Modal 
+                        trigger={<Button size='mini' circular color='yellow' onClick = {this.handlePriceOpen} icon='warning' />}
+                        open={this.state.modalPriceOpen}
+                        onClose={this.handlePriceClose}
+                        closeOnEscape={false}
+                        closeOnDimmerClick={false}
+                      >
+                      <Header icon='hand point down outline' content='Change Price' />
+                      <Modal.Content>
+                          
+                          {this.state.lowerPriceItem !== null &&
+                            <div>
+                               <p>{JSON.stringify(this.state.priceItem.price)}</p>
+                               <p>{JSON.stringify(this.state.priceItem.sku)}</p>
+                               <p>{JSON.stringify(this.state.priceItem.itemId)}</p>
+                                
+                              <Grid columns={2} divided>
+                              <Grid.Row>
+                              <Grid.Column>
+                                {this.state.priceItem.pictures.length > 0 ? imagesTable(this.state.priceItem.pictures) : <div>
+                                <Icon name='images' size='big' /></div>}
+                                <h3>{this.state.priceItem.title}</h3>
+                                
+                                <label><h3>Price</h3></label>
+                                <Input id="price" type="number" step="0.1" id="price" value={this.state.priceItem.price} onChange={this.handleChangeField} />
+                                
+                                <h3>Status: {window.helpers.getConditionFromId(this.props.conditions, this.state.priceItem.condition)}</h3>
+                               </Grid.Column>   
+                               <Grid.Column>
+                              
+                                <Image size='small' src = {this.state.lowerPriceItem.picture}></Image>
+                                <h3>{this.state.lowerPriceItem.title}</h3>
+                                <h3>Price: {this.state.lowerPriceItem.price}</h3>
+                                <h3>Status: {this.state.lowerPriceItem.condition}</h3>
+                                <h4><a href={this.state.lowerPriceItem.linkUrl} target="_blank">Go to Listing in Ebay</a></h4>
+                                <h4><a href={`https://www.ebay.com/sch/i.html?_nkw=${this.props.item.partNumbers[0]}&_stpos=33021&_fspt=1&LH_PrefLoc=1&LH_BIN=1&_sop=15&LH_ItemCondition=
+                                ${conditionEbayQuery(this.props.item.condition)}`} target="_blank">Search Results in Ebay</a></h4>
+                              </Grid.Column>
+                               </Grid.Row>
+                               </Grid>
+                            </div>
+                          }
+
+                          {this.state.lowerPriceItem === null && 
+                            
+                                <div className='App'><Icon loading name='spinner' size='huge' /></div>
+                            
+                          }
+                          
+                          
+                          
+                          
+                      
+                      
+                      </Modal.Content>
+
+                      <Modal.Actions>                        
+                        <Button onClick = {this.handlePriceListing} color='green'>
+                            <Icon name='checkmark' /> Apply
+                        </Button>
+                        <Button onClick = {this.handleDismissPriceListing} color='yellow'>
+                            <Icon name='checkmark' /> Dismiss
+                        </Button>
+                        <Button onClick = {this.handleDismissForeverPriceListing} color='red'>
+                            <Icon name='checkmark' /> Dismiss Forever
+                        </Button>
+                        <Button onClick = {this.handlePriceClose} color='black'>
+                            <Icon name='cancel' /> Cancel
+                        </Button>
+                      </Modal.Actions>
+
+                    </Modal></span> : <span></span> }  
+
+
+
                       
                     </Table.Cell>
                     
@@ -284,7 +590,8 @@ class Product extends Component {
                         </Button>
                       </Modal.Actions>
 
-                    </Modal></span> : <span></span> }   
+                    </Modal></span> : <span></span> }                     
+
                        
                     
                       
@@ -393,6 +700,7 @@ const mapStateToProps = (state) => {
         listingDraftDeleteDatabase: (url, listings) => dispatch(listingDraftDeleteDatabase(url, listings)),
         listingDeleteDatabase: (url, listings) => dispatch(listingDeleteDatabase(url, listings)),
         listingCancelEbay: (url, listings) => dispatch(listingCancelEbay(url, listings)),
+        listingsUpdate: (listings) => dispatch(listingsUpdate(listings)),
         
     };
   };
