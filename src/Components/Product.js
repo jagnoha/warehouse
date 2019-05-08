@@ -460,9 +460,7 @@ class Product extends Component {
                           
                           {this.state.lowerPriceItem !== null &&
                             <div>
-                               <p>{JSON.stringify(this.state.priceItem.price)}</p>
-                               <p>{JSON.stringify(this.state.priceItem.sku)}</p>
-                               <p>{JSON.stringify(this.state.priceItem.itemId)}</p>
+                               
                                 
                               <Grid columns={2} divided>
                               <Grid.Row>

@@ -85,8 +85,15 @@ class ProductsDashboardPagination extends Component {
       
       
       } else if (statusFilterActive === 'toshelf'){
-        return list.filter(item => item.status === 'offline' && Number(item.quantity) > 0 && item.location.length === 0 )            }
-      else if (statusFilterActive === 'error'){
+        return list.filter(item => item.status === 'offline' && Number(item.quantity) > 0 && item.location.length === 0 )            
+      
+      } else if (statusFilterActive === 'checkPrice'){
+
+        return list.filter(item => item.status === 'online' && item.checkPrice === true ) 
+
+      } 
+      
+        else if (statusFilterActive === 'error'){
         return list.filter(item => item.status === 'error')
       } else {
         return list;

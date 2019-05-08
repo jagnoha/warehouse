@@ -97,7 +97,14 @@ class ProductsFilterByStatus extends Component {
                 value='error'
                 checked={this.props.filterByStatus === 'error'}
                 onChange={this.handleChange}          
-              />              
+              /> 
+              <Form.Field
+                control={Radio}
+                label='Check Price'  
+                value='checkPrice'
+                checked={this.props.filterByStatus === 'checkPrice'}
+                onChange={this.handleChange}          
+              />                 
               
             </Form.Group>
           </Form>      
