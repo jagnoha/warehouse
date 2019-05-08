@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import ProductInfo from './ProductInfo'
 import { 
-    Button, Label, Grid, Table, Header, Image, Checkbox, Input, Icon, Modal, 
+    Button, Label, Grid, Table, Header, Dropdown, Image, Checkbox, Segment, Divider, Input, Icon, Modal, 
  } from 'semantic-ui-react'
 
  import Price from './Price'
@@ -21,6 +21,7 @@ import {
  import Moment from 'react-moment';
  import 'moment-timezone';
  import axios from 'axios';
+ import '../helpers.js';
 
  //const urlbase = 'http://10.0.0.216:8083';
  //const urlbase = 'http://192.168.1.11:8083';
@@ -93,6 +94,8 @@ class Product extends Component {
                     title: this.props.item.title,
                     price: this.props.item.price,
                     condition: this.props.item.condition,
+                    conditionDescription: this.props.item.conditionDescription,
+                    quantity: this.props.item.quantity,
                 },
                 fullItem: this.props.item,
             })
@@ -105,8 +108,16 @@ class Product extends Component {
 
     }
 
+    checkSizeTitle = (title) => {
+        if (title.length > 80) {
+            return false;
+        }
+
+        return true;
+    }
+
     checkQuantity = (quantity) => {
-        if (Number(quantity) < 0) {
+        if (Number(quantity) <= 0) {
             return false;
         }
 
@@ -118,10 +129,10 @@ class Product extends Component {
         let doChange = true;
 
         switch(data.id){
-            //case "title":
-            //    doChange = this.checkSizeTitle(data.value);
-            //    break;
-            //case "quantity":
+            case "title":
+                doChange = this.checkSizeTitle(data.value);
+                break;
+            case "quantity":
             case "price":    
                 doChange = this.checkQuantity(data.value);
                 break;
@@ -287,12 +298,32 @@ class Product extends Component {
         })
 
         console.log(this.state.priceItem.price);
+
+        let edited = false;
+
+       if (this.state.fullItem.title !== this.state.priceItem.title ||
+          this.state.fullItem.quantity !== this.state.priceItem.quantity ||
+          this.state.fullItem.condition !== this.state.priceItem.condition  
+        ){
+            edited = true;
+        } 
         
-        axios.get(`https://29508158.ngrok.io/updatepriceonebay/${this.state.priceItem.sku}/${this.state.priceItem.itemId}/${this.state.priceItem.price}`)
+        axios.get(`https://29508158.ngrok.io/updatepriceonebay/${this.state.priceItem.sku}/${this.state.priceItem.itemId}/
+        ${this.state.priceItem.price}/${this.state.priceItem.title}/${this.state.priceItem.quantity}/${this.state.priceItem.condition}/
+        ${this.state.priceItem.conditionDescription}/${edited}`)
         .then(response => {
             
             let listingsTemp = this.props.listings.filter(item => item.sku !== this.state.priceItem.sku);
-            let newItem = {...this.state.fullItem, ['checkPrice']:null, ['price']: this.state.priceItem.price}
+            let newItem = {...this.state.fullItem, 
+                ['checkPrice']:null, 
+                ['price']: this.state.priceItem.price,
+                ['title']: this.state.priceItem.title,
+                ['quantity']: this.state.priceItem.quantity,
+                ['condition']: this.state.priceItem.condition,
+                ['conditionDescription']: this.state.priceItem.conditionDescription,
+
+                
+            }
             let listingsNew = [...listingsTemp, newItem]  
             
             this.props.listingsUpdate(listingsNew);
@@ -320,6 +351,12 @@ class Product extends Component {
                 alert(JSON.stringify(error));
             }
         );
+
+        
+
+
+
+
     
     
     }
@@ -460,7 +497,10 @@ class Product extends Component {
                           
                           {this.state.lowerPriceItem !== null &&
                             <div>
-                               
+                                {/*<p>{JSON.stringify(this.state.priceItem.condition)}</p>
+                                <p>{JSON.stringify(this.state.priceItem.conditionDescription)}</p>*/}
+                                
+                                
                                 
                               <Grid columns={2} divided>
                               <Grid.Row>
@@ -468,21 +508,74 @@ class Product extends Component {
                                 {this.state.priceItem.pictures.length > 0 ? imagesTable(this.state.priceItem.pictures) : <div>
                                 <Icon name='images' size='big' /></div>}
                                 <h3>{this.state.priceItem.title}</h3>
+
+                                    <div>
+                                    <label><h4>Title</h4></label>
+                                    <Input fluid id="title" value={this.state.priceItem.title} onChange={this.handleChangeField} placeholder="Title" />
                                 
-                                <label><h3>Price</h3></label>
-                                <Input id="price" type="number" step="0.1" id="price" value={this.state.priceItem.price} onChange={this.handleChangeField} />
+                                    <label><h4>Condition</h4></label>
+                                    <Dropdown id="condition" defaultValue={this.state.priceItem.condition} selection 
+                                        options={window.helpers.conditionOptions}
+                                        onChange={this.handleChangeField} />
+
+                                    { this.state.priceItem.condition !== '0' ?
+                                        <span><label><h4>Condition Description</h4></label>
+                                            <Input id="conditionDescription" value={this.state.priceItem.conditionDescription} onChange={this.handleChangeField} 
+                                             placeholder="Condition Description" /></span> : <span></span>
+                                     }         
+                
+                                    <label><h4>Quantity</h4></label>
+                                <Input id="quantity" type="number" value={this.state.priceItem.quantity} onChange={this.handleChangeField} />
                                 
-                                <h3>Status: {window.helpers.getConditionFromId(this.props.conditions, this.state.priceItem.condition)}</h3>
+                                 </div>
+                                
+                                 <Segment basic textAlign='center'>
+
+                                <Divider horizontal>
+                                    <Header as='h4'>
+                                        <Icon name='tag' />
+                                        Price                                  
+                                    </Header>
+                                </Divider>
+                                 
+                                {/*<label><h4>Price</h4></label>*/}
+                                <Input id="price" type="number" step="0.1" value={this.state.priceItem.price} onChange={this.handleChangeField} />
+                                
+                                </Segment>
+                                
+                                {/*<h3>Status: {window.helpers.getConditionFromId(this.props.conditions, this.state.priceItem.condition)}</h3>*/}
                                </Grid.Column>   
                                <Grid.Column>
                               
                                 <Image size='small' src = {this.state.lowerPriceItem.picture}></Image>
                                 <h3>{this.state.lowerPriceItem.title}</h3>
                                 <h3>Price: {this.state.lowerPriceItem.price}</h3>
-                                <h3>Status: {this.state.lowerPriceItem.condition}</h3>
+                                <h3>Condition: {this.state.lowerPriceItem.condition}</h3>
+                                
+
+                                <Segment basic textAlign='center'>
+                                
+                                    
+
+                                <Grid columns={2} divided>
+                                
+                                <Grid.Row>
+                                
+                                <Grid.Column>
                                 <h4><a href={this.state.lowerPriceItem.linkUrl} target="_blank">Go to Listing in Ebay</a></h4>
+                                </Grid.Column>
+                                <Grid.Column>
                                 <h4><a href={`https://www.ebay.com/sch/i.html?_nkw=${this.props.item.partNumbers[0]}&_stpos=33021&_fspt=1&LH_PrefLoc=1&LH_BIN=1&_sop=15&LH_ItemCondition=
                                 ${conditionEbayQuery(this.props.item.condition)}`} target="_blank">Search Results in Ebay</a></h4>
+                                </Grid.Column>
+                                
+                                </Grid.Row>
+
+                                </Grid>
+
+                                </Segment>
+                              
+                              
                               </Grid.Column>
                                </Grid.Row>
                                </Grid>
