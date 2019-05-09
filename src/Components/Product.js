@@ -477,7 +477,7 @@ class Product extends Component {
                     <Table.Cell>
                         <Price price = {this.props.item.price} />
                         { (this.props.item.checkPrice === true && this.props.item.status === "online" && this.props.picturesIsLoading.filter(item => item === this.props.item.uuid).length === 0 && this.props.item.pictures !== 'PENDING') ?  <span>
-                            <Button size='mini' circular color='yellow' icon='warning' />
+                            <Icon size='small' circular bordered inverted color='yellow' name='warning' />
                        </span> : <span></span>}
 
                         { /*(this.props.item.checkPrice === true && this.props.item.status === "online" && this.props.picturesIsLoading.filter(item => item === this.props.item.uuid).length === 0 && this.props.item.pictures !== 'PENDING') ?  <span>
