@@ -351,13 +351,6 @@ class Product extends Component {
                 alert(JSON.stringify(error));
             }
         );
-
-        
-
-
-
-
-    
     
     }
     
@@ -483,8 +476,12 @@ class Product extends Component {
                     </Table.Cell>
                     <Table.Cell>
                         <Price price = {this.props.item.price} />
-                        
                         { (this.props.item.checkPrice === true && this.props.item.status === "online" && this.props.picturesIsLoading.filter(item => item === this.props.item.uuid).length === 0 && this.props.item.pictures !== 'PENDING') ?  <span>
+                            <Button size='mini' circular color='yellow' icon='warning' />
+                       </span> : <span></span>}
+
+                        { /*(this.props.item.checkPrice === true && this.props.item.status === "online" && this.props.picturesIsLoading.filter(item => item === this.props.item.uuid).length === 0 && this.props.item.pictures !== 'PENDING') ?  <span>
+                        
                         <Modal 
                         trigger={<Button size='mini' circular color='yellow' onClick = {this.handlePriceOpen} icon='warning' />}
                         open={this.state.modalPriceOpen}
@@ -497,8 +494,7 @@ class Product extends Component {
                           
                           {this.state.lowerPriceItem !== null &&
                             <div>
-                                {/*<p>{JSON.stringify(this.state.priceItem.condition)}</p>
-                                <p>{JSON.stringify(this.state.priceItem.conditionDescription)}</p>*/}
+                                
                                 
                                 
                                 
@@ -538,12 +534,10 @@ class Product extends Component {
                                     </Header>
                                 </Divider>
                                  
-                                {/*<label><h4>Price</h4></label>*/}
                                 <Input id="price" type="number" step="0.1" value={this.state.priceItem.price} onChange={this.handleChangeField} />
                                 
                                 </Segment>
                                 
-                                {/*<h3>Status: {window.helpers.getConditionFromId(this.props.conditions, this.state.priceItem.condition)}</h3>*/}
                                </Grid.Column>   
                                <Grid.Column>
                               
@@ -610,7 +604,12 @@ class Product extends Component {
                         </Button>
                       </Modal.Actions>
 
-                    </Modal></span> : <span></span> }  
+                    </Modal></span> : <span></span> 
+                    
+                
+                        */ }  
+
+
 
 
 
