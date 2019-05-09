@@ -98,6 +98,44 @@ class ListingForm extends Component {
                     priceItem: {
                         sku: this.state.fields.sku,
                         itemId: this.state.fields.itemId,
+                        //brandItem: window.helpers.getBrandFromId(this.props.brands, this.state.fields.brand),
+                        pictures: this.state.fields.pictures,
+                        title: this.state.fields.title,
+                        price: this.state.fields.price,
+                        condition: this.state.fields.condition,
+                        conditionDescription: this.state.fields.conditionDescription,
+                        quantity: this.state.fields.quantity,
+                    },
+                })
+                            
+    
+            }).catch(error => {
+                    alert(error);
+                }
+            );
+    
+        }
+
+        handlePriceOpenDraft = () => {
+            this.setState({ modalPriceOpen: true })
+    
+            let config = {
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                }
+              }
+    
+            //axios.get(`https://29508158.ngrok.io/ebaysearch/${this.state.fields.partNumbers[0]}/33021/${getConditionCode(this.state.fields.condition)}`, config)          
+            axios.get(`https://29508158.ngrok.io/ebaysearch/${window.helpers.getBrandFromId(this.props.brands, this.state.fields.brand) 
+            + this.state.fields.partNumbers[0]}/33021/${getConditionCode(this.state.fields.condition)}`, config)          
+            .then(response => {
+          
+                this.setState({
+                    lowerPriceItem: response.data,
+                    priceItem: {
+                        sku: this.state.fields.sku,
+                        itemId: this.state.fields.itemId,
+                        //brandItem: window.helpers.getBrandFromId(this.props.brands, this.state.fields.brand),
                         pictures: this.state.fields.pictures,
                         title: this.state.fields.title,
                         price: this.state.fields.price,
@@ -1027,7 +1065,11 @@ class ListingForm extends Component {
                 { (this.state.fields.checkPrice === true && this.state.fields.status === "online") ?  <span>
                         
                         <Modal 
-                        trigger={<Button size='mini' circular color='yellow' onClick = {this.handlePriceOpen} icon='warning' />}
+                        trigger={<Button size='tiny' color='yellow' onClick = {this.handlePriceOpen}><Icon name='warning' />
+                        There is a lower price</Button>}
+
+                        
+
                         open={this.state.modalPriceOpen}
                         onClose={this.handlePriceClose}
                         closeOnEscape={false}
@@ -1138,6 +1180,115 @@ class ListingForm extends Component {
                     </Modal></span> : <span></span> }
 
 
+
+
+                    { (this.state.fields.status === "offline") ?  <span>
+                        
+                        <Modal 
+                        trigger={<Button size='mini' color='green' onClick = {this.handlePriceOpen}><Icon name='tag' />
+                        Get Better Price </Button>}
+                        open={this.state.modalPriceOpen}
+                        onClose={this.handlePriceClose}
+                        closeOnEscape={false}
+                        closeOnDimmerClick={false}
+                      >
+                      <Header icon='tag' content='Get Better Price' />
+                      <Modal.Content>
+                          
+                          {this.state.lowerPriceItem !== null &&
+                            <div>
+                                {/*<p>{JSON.stringify(this.state.priceItem.condition)}</p>
+                                <p>{JSON.stringify(this.state.priceItem.conditionDescription)}</p>*/}
+                                
+                                
+                                
+                              <Grid columns={2} divided>
+                              <Grid.Row>
+                              <Grid.Column>
+                                {this.state.priceItem.pictures.length > 0 ? imagesTable(this.state.priceItem.pictures) : <div>
+                                <Icon name='images' size='big' /></div>}
+                                
+                                <h3>{this.state.priceItem.title}</h3>
+                                <h3>{window.helpers.getConditionFromId(this.props.conditions, this.state.fields.condition)}</h3>
+
+                                    
+                                
+                                 <Segment basic textAlign='center'>
+
+                                <Divider horizontal>
+                                    <Header as='h4'>
+                                        <Icon name='tag' />
+                                        Price                                  
+                                    </Header>
+                                </Divider>
+                                 
+                                {/*<label><h4>Price</h4></label>*/}
+                                <Input id="price" type="number" step="0.1" value={this.state.priceItem.price} onChange={this.handleChangeFieldPrice} />
+                                
+                                </Segment>
+                                
+                                {/*<h3>Status: {window.helpers.getConditionFromId(this.props.conditions, this.state.priceItem.condition)}</h3>*/}
+                               </Grid.Column>   
+                               <Grid.Column>
+                              
+                                <Image size='small' src = {this.state.lowerPriceItem.picture}></Image>
+                                <h3>{this.state.lowerPriceItem.title}</h3>
+                                <h3>Price: {this.state.lowerPriceItem.price}</h3>
+                                <h3>Condition: {this.state.lowerPriceItem.condition}</h3>
+                                
+
+                                <Segment basic textAlign='center'>
+                                
+                                    
+
+                                <Grid columns={2} divided>
+                                
+                                <Grid.Row>
+                                
+                                <Grid.Column>
+                                <h4><a href={this.state.lowerPriceItem.linkUrl} target="_blank">Go to Listing in Ebay</a></h4>
+                                </Grid.Column>
+                                <Grid.Column>
+                                <h4><a href={`https://www.ebay.com/sch/i.html?_nkw=${this.props.item.partNumbers[0]}&_stpos=33021&_fspt=1&LH_PrefLoc=1&LH_BIN=1&_sop=15&LH_ItemCondition=
+                                ${conditionEbayQuery(this.props.item.condition)}`} target="_blank">Search Results in Ebay</a></h4>
+                                </Grid.Column>
+                                
+                                </Grid.Row>
+
+                                </Grid>
+
+                                </Segment>
+                              
+                              
+                              </Grid.Column>
+                               </Grid.Row>
+                               </Grid>
+                            </div>
+                          }
+
+                          {this.state.lowerPriceItem === null && 
+                            
+                                <div className='App'><Icon loading name='spinner' size='huge' /></div>
+                            
+                          }
+                          
+                          
+                          
+                          
+                      
+                      
+                      </Modal.Content>
+
+                      <Modal.Actions>                        
+                        <Button onClick = {this.handlePriceListing} color='green'>
+                            <Icon name='checkmark' /> Apply
+                        </Button>
+                        <Button onClick = {this.handlePriceClose} color='black'>
+                            <Icon name='cancel' /> Cancel
+                        </Button>
+                      </Modal.Actions>
+
+                    </Modal></span> : <span></span> }
 
 
 
@@ -1380,6 +1531,7 @@ const mapStateToProps = (state) => {
         listingDraft: state.listingDraft,
         listings: state.listings,
         conditions: state.conditions,
+        brands: state.brands,
     };
   };
   
