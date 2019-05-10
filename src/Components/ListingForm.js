@@ -253,11 +253,15 @@ class ListingForm extends Component {
 
         handleDismissPriceListing = () => {
         
+            
+
+            let tempItemId = this.state.lowerPriceItem.itemId;
+
             this.setState({
                 lowerPriceItem: null,
             })
-            
-            axios.get(`https://29508158.ngrok.io/dismisspricerevise/${this.state.priceItem.sku}`)
+        
+             axios.get(`https://29508158.ngrok.io/dismisspricerevise/${this.state.priceItem.sku}/${tempItemId}`)
             .then(response => {            
                 
     
