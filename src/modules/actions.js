@@ -40,7 +40,7 @@ const uuidv4 = require('uuid/v4');
 
 //const urlbase = 'https://29508158.ngrok.io';
 //const urlbase = 'https://e9822fe8.ngrok.io';
-const urlbase = 'uaintlserver.ngrok.io';
+const urlbase = 'https://uaintlserver.ngrok.io';
 
 export function locationsHasErrored(bool){
     return {
