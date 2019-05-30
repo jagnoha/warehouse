@@ -90,7 +90,7 @@ class ListingForm extends Component {
                 }
               }
     
-            axios.get(`https://29508158.ngrok.io/ebaysearch/${this.state.fields.partNumbers[0]}/33021/${getConditionCode(this.state.fields.condition)}`, config)          
+            axios.get(`${this.props.urlBase}/ebaysearch/${this.state.fields.partNumbers[0]}/33021/${getConditionCode(this.state.fields.condition)}`, config)          
             .then(response => {
           
                 this.setState({
@@ -126,7 +126,7 @@ class ListingForm extends Component {
               }
     
             //axios.get(`https://29508158.ngrok.io/ebaysearch/${this.state.fields.partNumbers[0]}/33021/${getConditionCode(this.state.fields.condition)}`, config)          
-            axios.get(`https://29508158.ngrok.io/ebaysearch/${window.helpers.getBrandFromId(this.props.brands, this.state.fields.brand) 
+            axios.get(`${this.props.urlBase}/ebaysearch/${window.helpers.getBrandFromId(this.props.brands, this.state.fields.brand) 
             + this.state.fields.partNumbers[0]}/33021/${getConditionCode(this.state.fields.condition)}`, config)          
             .then(response => {
           
@@ -261,7 +261,7 @@ class ListingForm extends Component {
                 lowerPriceItem: null,
             })
         
-             axios.get(`https://29508158.ngrok.io/dismisspricerevise/${this.state.priceItem.sku}/${tempItemId}`)
+             axios.get(`${this.state.urlBase}/dismisspricerevise/${this.state.priceItem.sku}/${tempItemId}`)
             .then(response => {            
                 
     
@@ -305,7 +305,7 @@ class ListingForm extends Component {
                 lowerPriceItem: null,
             })
             
-            axios.get(`https://29508158.ngrok.io/dismisspricereviseforever/${this.state.priceItem.sku}`)
+            axios.get(`${this.state.urlBase}/dismisspricereviseforever/${this.state.priceItem.sku}`)
             .then(response => {            
                 
     
