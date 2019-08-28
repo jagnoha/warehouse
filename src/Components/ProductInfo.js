@@ -17,6 +17,7 @@ class ProductInfo extends Component {
         {window.helpers.outOfStock(this.props.quantity)}
         {this.props.hasCompatibility ? <Label size='small' color='blue'><Icon name='car' />Fitments</Label> : ""} 
         <h3>{this.props.title}</h3>
+        <p><strong>{this.props.category.CategoryName.split(":")[this.props.category.CategoryName.split(":").length - 1]}</strong></p>
         <div>
             <LocationWarning length = {this.props.location.length} qty = {this.props.quantity} status = {this.props.status} />
         </div>

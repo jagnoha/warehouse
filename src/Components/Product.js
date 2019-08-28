@@ -470,6 +470,7 @@ class Product extends Component {
                             ebayMarketplace = {this.props.ebayMarketplaceItem}
                             status = {this.props.item.status}
                             asin = {this.props.item.asin}
+                            category = {this.props.item.category}
                         />
                       
                     </Table.Cell>
