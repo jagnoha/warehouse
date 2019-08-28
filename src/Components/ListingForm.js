@@ -3,7 +3,7 @@ import '../App.css';
 import '../helpers.js';
 import { 
     Button, Form, Input, TextArea, Grid, Header, Image, Message, 
-    Menu, Label, Segment, Dropdown, Icon, Checkbox, Modal, Divider } from 'semantic-ui-react';
+    Menu, Label, Segment, Dropdown, Icon, Checkbox, Modal, Divider, List } from 'semantic-ui-react';
 import ImagesLightBoxForm from './ImagesLightBoxForm'
 import { connect } from 'react-redux';
 import { brandAddDatabase, locationAddDatabase, listingDraftUpdated, listingDraftUpdateDatabase, 
@@ -71,7 +71,13 @@ class ListingForm extends Component {
 
             modalPriceOpen: false,
 
+            modalCategoryOpen: false,
+
             lowerPriceItem: null,
+
+            //categoryList: null,
+
+            categoryOptions: null,
 
             priceItem: null,
 
@@ -80,6 +86,69 @@ class ListingForm extends Component {
             
 
         }
+
+        handleCategoryOpen = () => {
+            this.setState({modalCategoryOpen: true})
+            
+            let config = {
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                }
+              }
+
+            axios.get(`${this.props.urlBase}/getcategorylist/${this.state.fields.sku}`, config)          
+            .then(response => {
+          
+                this.setState({
+                    /*categoryList: response.data.map((item)=> {
+                        return (
+                            {
+                                id: item.categoryId,
+                                name: item.categoryName,
+                                ancestor: item.ancestor[0].categoryName,    
+                            }
+                        )
+                    }),*/
+                    categoryOptions: response.data.map((item)=> {
+                        return (
+                            {
+                                key: item.categoryId,
+                                text: item.categoryName + ' | ' + item.ancestor[0].categoryName,
+                                value: {
+                                    CategoryID: item.categoryId,
+                                    CategoryName: item.categoryName,
+                                } 
+                            }
+                        )
+                    })
+                })
+    
+            }).catch(error => {
+                    alert(error);
+                }
+            );
+
+        }
+
+        handleCategoryClose = () => {
+            this.setState({modalCategoryOpen: false, categoryOptions: null})
+        }
+
+        handleChangeCategory = (e, { value }) => {
+            this.setState({value});            
+        }
+
+        handleApplyChangeCategory = () => {            
+            console.log(this.state.value);
+            this.setState({   
+                modalCategoryOpen: false, 
+                //categoryList: null, 
+                categoryOptions: null,
+                fields: { ...this.state.fields, ['category']: this.state.value  },    
+            })
+            
+        }
+
 
         handlePriceOpen = () => {
             this.setState({ modalPriceOpen: true })
@@ -317,7 +386,7 @@ class ListingForm extends Component {
     
                 this.setState(
                     { 
-                        modalPriceOpen: false, 
+                        modalPriceOpen: false,
                         lowerPriceItem: null, 
                         priceItem: null,
                         fields: { ...this.state.fields, ['checkPrice']: false },
@@ -863,7 +932,8 @@ class ListingForm extends Component {
         
     
         render(){
-           const { currentPartNumbers } = this.state
+           const { currentPartNumbers, value } = this.state
+
            const renderLabel = label => ({
                     color: 'black',
                     content: label.text,
@@ -991,6 +1061,68 @@ class ListingForm extends Component {
                 <Form.Field>
                     <label>Title</label>
                     <Input id="title" value={this.state.fields.title} onChange={this.handleChangeField} placeholder="Title" />
+                </Form.Field>
+                
+                
+                
+
+                    { (this.state.fields.status === "offline") ?  <span>
+                        
+                        <Modal 
+                        trigger={<Button size='mini' color='blue' onClick = {this.handleCategoryOpen}><Icon name='sitemap' />
+                        Get Better Category </Button>}
+                        open={this.state.modalCategoryOpen}
+                        onClose={this.handleCategoryClose}
+                        closeOnEscape={false}
+                        closeOnDimmerClick={false}
+                      >
+                      <Header icon='sitemap' content='Get Better Category' />
+                      <Modal.Content>
+                          
+                          {this.state.categoryOptions !== null &&
+                            <div>
+                                <Dropdown
+                                    onChange={this.handleChangeCategory}
+                                    options={this.state.categoryOptions}
+                                    placeholder='Choose a Category'
+                                    selection
+                                    value={value}
+                                />
+                            
+                            </div>
+                          }
+
+                          {this.state.categoryOptions === null && 
+                            
+                                <div className='App'><Icon loading name='spinner' size='huge' /></div>
+                            
+                          }
+                          
+                          
+                          
+                          
+                      
+                      
+                      </Modal.Content>
+
+                      <Modal.Actions>                        
+                        <Button onClick = {this.handleApplyChangeCategory} color='green'>
+                            <Icon name='checkmark' /> Apply
+                        </Button>
+                        <Button onClick = {this.handleCategoryClose} color='black'>
+                            <Icon name='cancel' /> Cancel
+                        </Button>
+                      </Modal.Actions>
+
+                    </Modal></span> : <span></span> }
+
+
+
+
+                <Form.Field>
+                    <label>Category</label>
+                    <p>{this.state.fields.category.CategoryName.split(":")[this.state.fields.category.CategoryName.split(":").length - 1]}</p>
+                    
                 </Form.Field>
 
                 

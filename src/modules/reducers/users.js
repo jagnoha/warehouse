@@ -40,7 +40,14 @@ export function users(state = [
         username: 'uri',
         password: 'uri',
         group: '2',
+      },
+      {
+        id: '7',
+        username: 'israel1',
+        password: 'israel1',
+        group: '2',
       }
+
 ]) {
     return state
 }
