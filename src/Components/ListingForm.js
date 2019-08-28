@@ -1120,8 +1120,7 @@ class ListingForm extends Component {
 
 
                 <Form.Field>
-                    <label>Category</label>
-                    <p>{this.state.fields.category.CategoryName.split(":")[this.state.fields.category.CategoryName.split(":").length - 1]}</p>
+                    <h2>{this.state.fields.category.CategoryName.split(":")[this.state.fields.category.CategoryName.split(":").length - 1]}</h2>
                     
                 </Form.Field>
 
