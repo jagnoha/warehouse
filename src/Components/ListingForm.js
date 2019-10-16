@@ -81,6 +81,8 @@ class ListingForm extends Component {
 
             priceItem: null,
 
+            checkedPic: false,
+
             //currentHasCompatibility: this.props.item.hasCompatibility,
             //currentBrand: window.helpers.getBrandFromId(this.props.brands, this.props.item.brand),  
             
@@ -889,7 +891,7 @@ class ListingForm extends Component {
         }
 
         handleUpdateItem = (fileItems) => {
-            if (fileItems.length > 0){
+            if (fileItems.length > 0 && this.state.checkedPic === false){
                 console.log(fileItems);
                 let idPic = uuidv4();
 
@@ -912,6 +914,7 @@ class ListingForm extends Component {
                   .then((response) => {
             
                     //this.setState({uploadingPicture: false});
+                    
                     this.setState({
                         pictures: this.state.pictures.concat(idPic),
                     })
@@ -928,6 +931,9 @@ class ListingForm extends Component {
             
             
             }
+            this.setState({
+                checkedPic: !this.state.checkedPic,
+            })
         }
         
     
@@ -987,11 +993,14 @@ class ListingForm extends Component {
             
             <FilePond 
                 ref={ref => this.pond = ref}
-                allowMultiple={false} 
+                allowMultiple={false}
+                //maxFiles={1} 
                 name={"file"}
+                oninit={() => this.handleInit() }
                 onupdatefiles={this.handleUpdateItem} 
             
-            />
+            >
+            </FilePond>
             
             
 
